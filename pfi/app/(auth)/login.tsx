@@ -11,6 +11,8 @@ export default function Login() {
         email: "sorcier@yopmail.com",
         id: 0,
         emailVerified: true,
+        address: "123 rue Duquette, Sainte-Thérèse", 
+        mdp:'Test1234$'
     }
 
     const {login} = useAccount()

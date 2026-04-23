@@ -5,6 +5,7 @@ import { Redirect, Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { useSQLiteContext, SQLiteProvider, SQLiteDatabase } from 'expo-sqlite';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
@@ -30,6 +31,26 @@ export default function RootLayout() {
     Macondo: require('../assets/fonts/MacondoSwashCaps-Regular.ttf'),
     ...FontAwesome.font,
   });
+  
+  //TODO: ajouter la table produits if not exists
+  async function initDB(db: SQLiteDatabase) {
+    const result = await db.getFirstAsync<{user_version:number}>('PRAGMA user_version');
+    const currentVersion = result?.user_version || 0;
+    if (currentVersion < 1) {
+      await db.execAsync(`      
+        CREATE TABLE IF NOT EXISTS clients (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          mdp varchar(20) NOT NULL, 
+          pseudo VARCHAR(20) NOT NULL, 
+          courriel VARCHAR(128) NOT NULL, 
+          courriel_verifie_a TIMESTAMP DEFAULT null, 
+          admin TINYINT DEFAULT 0, 
+          adresse VARCHAR(128), 
+          langue_preferee VARCHAR(3) DEFAULT 'fr'
+        );      
+      `); 
+    }
+  }
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -47,9 +68,12 @@ export default function RootLayout() {
   }
 
   return (
+    <SQLiteProvider databaseName='pfi' onInit={initDB}>
     <AccountProvider>
       <RootLayoutNav />
-    </AccountProvider>);
+    </AccountProvider>
+    </SQLiteProvider>
+  );
 }
 
 function RootLayoutNav() {
