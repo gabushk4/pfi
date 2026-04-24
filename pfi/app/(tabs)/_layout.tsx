@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Modal, Pressable } from 'react-native';
+import { Animated, Dimensions, Modal, Pressable, TouchableOpacity, useAnimatedValue, View } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -10,6 +10,7 @@ import { getHeaderStyle } from '@/constants/HeaderStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import HamburgerMenu from '../hamburgerMenu';
 import AccountMenu from '../accountMenu'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -22,20 +23,80 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"]
+  const screenWidth = Dimensions.get("screen").width
+  const insets = useSafeAreaInsets()
   
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [menuOpenFrom, setMenuOpenFrom] = useState<'account' | 'index'>('account')
 
   const menuContent: Record<string, React.ReactElement> = {
-    "account": <AccountMenu/>
+    "account": <AccountMenu isMenuOpen={isMenuOpen} />
   }
+
+  const openMenuAnim = useAnimatedValue(1)
+
+  const openMenu = () => {
+    Animated.timing(openMenuAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+  }
+
+  const closeMenu = () => {
+    Animated.timing(openMenuAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+  }
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      openMenu()
+      setIsModalOpen(true)        
+    } else{
+      closeMenu()
+      setTimeout(() => {
+        setIsModalOpen(false)
+      }, 500)
+    }
+  }, [isMenuOpen])
 
   return (
     <>
       <Modal
-        visible={isMenuOpen}
+        visible={isModalOpen}
+        backdropColor={colors.backdrop}
       >
-        {menuContent[menuOpenFrom]}
+        <Animated.View style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '60%',
+          height: '50%',
+          marginTop:insets.top,          
+          transform: [{
+            translateX: openMenuAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange:[0, screenWidth * 0.6]
+          }) }]
+        }}>         
+          <View style={{width:'100%', height:'100%', backgroundColor: colors.background,
+          borderWidth: 1,
+          borderColor: colors.tint,}}>
+            {menuContent[menuOpenFrom]}
+          </View>
+          <TouchableOpacity style={{ position: 'relative', left: '40%' }}
+            onPress={() => {
+              setIsMenuOpen(false)
+            }}
+          >
+            <MaterialCommunityIcons name="close" size={40} color={colors.tint} />
+          </TouchableOpacity>
+        </Animated.View>
       </Modal>
       <Tabs
         screenOptions={{...(getHeaderStyle(colors)), 

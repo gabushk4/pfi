@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-export default function AccountMenu({ }) {
+export default function AccountMenu({ isMenuOpen }) {
     return (
         <View>
             <View>
