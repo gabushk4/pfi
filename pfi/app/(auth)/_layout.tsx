@@ -7,9 +7,9 @@ export default function AuthLayout() {
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? "light"]
   return (
-      <Stack
-       
-      >
+    <Stack
+      screenOptions={{...(getHeaderStyle(colors))}}
+    >
       <Stack.Screen name="login" options={{ headerTitle:'Connexion', }} />
       <Stack.Screen name="register" options={{ headerTitle: 'Inscription'}} />
     </Stack>

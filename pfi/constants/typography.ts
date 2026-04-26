@@ -1,4 +1,6 @@
 import { TextStyle } from 'react-native';
+import { useColorScheme } from 'react-native';
+import Colors from './Colors';
 
 export const typography: Record<string, TextStyle> = {
     title: { fontSize: 32, fontWeight: 'bold', fontFamily:'EagleLake' },

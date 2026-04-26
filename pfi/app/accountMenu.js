@@ -1,12 +1,19 @@
+import Colors from '@/constants/Colors';
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, useColorScheme } from 'react-native';
 
 export default function AccountMenu({ isMenuOpen }) {
+    const colorScheme = useColorScheme()
+    const colors = Colors[colorScheme] ?? "light";
+    
+
+    const s = StyleSheet.create({
+        titre: {
+            color: colors.text
+        }
+    })
     return (
         <View>
-            <View>
-                <Text>Langues</Text>
-            </View>
             <View>
                 <Text>Maps</Text>
             </View>

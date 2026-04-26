@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-export default function HamburgerMenu({tintColor, onOpen, onClose, from = "account" }) {
+export default function HamburgerMenu({tintColor, onOpen}) {
   
   return (
     <TouchableOpacity onPress={()=>onOpen()}>

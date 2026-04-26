@@ -37,8 +37,6 @@ export default function Landing() {
                     </View>
                 </View>                
             </View>
-            
-            
         </View>
     );
 }

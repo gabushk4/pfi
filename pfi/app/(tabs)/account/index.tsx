@@ -1,15 +1,15 @@
 import Colors from '@/constants/Colors';
-import { typography } from '@/constants/typography';
 import { useAccount } from '@/contexts/account';
-import { useSQLiteContext } from 'expo-sqlite';
 import { View, Text, useColorScheme, StyleSheet, Image, Touchable, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useUserAvatar } from '../../../hooks/useUserAvatar'
 
 export default function Account() {
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? 'light']
 
     const { account } = useAccount() 
+    const { avatar } = useUserAvatar(account?.id)
 
     const s = StyleSheet.create({
         container: {
@@ -38,7 +38,8 @@ export default function Account() {
             color: colors.text,
             opacity: 0.3,
             fontSize: 20,
-            width:"48%"
+            width: "48%",
+            fontFamily:"Macondo"
         },
         data: {
             alignSelf:'center',
@@ -46,7 +47,7 @@ export default function Account() {
             fontSize: 20,
             maxWidth: '52%',     
             flexWrap: 'wrap',
-            
+            fontFamily:"Macondo"
         },
         line: {
             height: 1,
@@ -84,7 +85,7 @@ export default function Account() {
         <View style={s.container}>
             <View style={s.pfpContainer}>
                 <Image
-                    source={icones.defaultPfp}
+                    source={avatar != null ? {uri:avatar} : icones.defaultPfp}
                     style={{ maxHeight: '90%', maxWidth: '90%' }}
                     resizeMode='contain'
                 />
@@ -108,6 +109,10 @@ export default function Account() {
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Courriel: </Text>
                     <Text numberOfLines={2} style={s.data}>{account?.email}</Text>
+                </View>
+                <View style={s.dataLine}>
+                    <Text style={s.dataLabel}>Langue: </Text>
+                    <Text style={s.data}>Automatique</Text> //TODO: changer pour une ariable d'un contexte
                 </View>
             </View>
             <TouchableOpacity style={s.editBtn}>
