@@ -1,15 +1,22 @@
 import Colors from '@/constants/Colors';
 import { useAccount } from '@/contexts/account';
-import { View, Text, useColorScheme, StyleSheet, Image, Touchable, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useUserAvatar } from '../../../hooks/useUserAvatar'
+import { useSQLiteContext } from 'expo-sqlite';
+import { useEffect, useState } from 'react';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import ProfilePicture from '../../../components/profilePicture';
 
 export default function Account() {
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? 'light']
 
+    const db = useSQLiteContext()
+
     const { account } = useAccount() 
-    const { avatar } = useUserAvatar(account?.id)
+
+    const [edit, setEdit] = useState(false)
+    const [userMdp, setUserMdp] = useState(account?.mdp)
+    const [userAddress, setUserAddress] = useState(account?.address)
 
     const s = StyleSheet.create({
         container: {
@@ -47,7 +54,9 @@ export default function Account() {
             fontSize: 20,
             maxWidth: '52%',     
             flexWrap: 'wrap',
-            fontFamily:"Macondo"
+            fontFamily: "Macondo",
+            borderRadius: 8,
+            borderColor:colors.tint,
         },
         line: {
             height: 1,
@@ -55,15 +64,7 @@ export default function Account() {
             backgroundColor: colors.text,
             opacity: 0.3
         },
-        pfpContainer: {
-            borderRadius: 100,
-            borderWidth: 1, 
-            borderColor: colors.tint,
-            height: 124,
-            aspectRatio: "1/1",
-            alignItems: 'center',
-            justifyContent:'center'
-        },
+        
         editBtn: {
             position: 'absolute',
             bottom: 24,
@@ -74,21 +75,63 @@ export default function Account() {
             padding: 6,
             alignItems: 'center',
             justifyContent:'center'
+        },
+        editable: {
+            ...(edit ? {
+                borderWidth: 1,
+                padding: 6,
+                zIndex:20
+            }:{})
+            
         }
     })
 
-    const icones = {
-        defaultPfp: colorScheme == "light" ? require("../../../assets/images/default_pfp_light.png") : require("../../../assets/images/default_pfp_dark.png")
-    }
-    
+    useEffect(() => {
+        if (!edit) { // if we finished editing, we save the changes
+            const sql = "UPDATE clients SET "
+            const keys: string[] = []
+            const values: string[] = []
+
+            if (account?.mdp !== userMdp && userMdp !== undefined) {
+                keys.push('mdp = ?')
+                values.push(userMdp)
+            }
+            if (account?.address !== userAddress && userAddress !== undefined) {
+                keys.push('adresse = ?')
+                values.push(userAddress)
+            }   
+
+            console.log("update executed", keys.length>0)
+
+            if (keys.length > 0) {
+                let userId = account?.id
+                if (userId) {
+                    db.runAsync(`${sql}${keys.join(', ')} WHERE id = ?`, [...values, userId])
+                        .then((res) => {
+                            console.log("edit success", res)
+                        }, (reason) => {
+                            console.error(reason)
+                        })
+                        .catch(err => {
+                            console.error(err)
+                        })
+                }
+            }
+        }
+    }, [edit])
+
     return (
-        <View style={s.container}>
-            <View style={s.pfpContainer}>
-                <Image
-                    source={avatar != null ? {uri:avatar} : icones.defaultPfp}
-                    style={{ maxHeight: '90%', maxWidth: '90%' }}
-                    resizeMode='contain'
+        <View style={s.container} >
+            {Keyboard.isVisible() && 
+                <Pressable style={{ top: 0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 10 }}
+                    onPress={() => {
+                        if (Keyboard.isVisible())
+                            Keyboard.dismiss()
+                    }}
                 />
+            }
+            <View style={{height:124}}>
+                <ProfilePicture isEditing={edit} pointerEvents="auto"/>
             </View>
             <View style={s.dataContainer}>
                 <View style={s.dataLine}>
@@ -98,24 +141,40 @@ export default function Account() {
                 <View style={s.line} />
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Mot de passe: </Text>
-                    <Text numberOfLines={1} style={s.data}>{ account?.mdp }</Text>
+                    <TextInput 
+                        numberOfLines={1} 
+                        style={[s.data, s.editable]}
+                        value={userMdp}
+                        onChangeText={(text) => { setUserMdp(text.trim()) }}
+                        readOnly={!edit}
+                    />
                 </View>
                 <View style={s.line} />
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Adresse: </Text>
-                    <Text numberOfLines={2} style={s.data}>{account?.address}</Text>
+                    <TextInput 
+                        numberOfLines={2} 
+                        multiline={true}
+                        style={[s.data, s.editable]}
+                        value={userAddress}
+                        onChangeText={(text) => {
+                            setUserAddress(text)
+                        }}
+                    />
                 </View>
                 <View style={s.line}/>
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Courriel: </Text>
                     <Text numberOfLines={2} style={s.data}>{account?.email}</Text>
                 </View>
+                <View style={s.line}/>
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Langue: </Text>
-                    <Text style={s.data}>Automatique</Text> //TODO: changer pour une ariable d'un contexte
+                    {/* TODO: changer pour une variable d'un contexte */}
+                    <Text style={s.data}>Automatique</Text> 
                 </View>
             </View>
-            <TouchableOpacity style={s.editBtn}>
+            <TouchableOpacity onPress={()=> setEdit(!edit)} style={s.editBtn}>
                 <MaterialCommunityIcons name="circle-edit-outline" size={32} color={colors.tint} />
             </TouchableOpacity>
         </View>

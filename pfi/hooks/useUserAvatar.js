@@ -1,53 +1,64 @@
-import { useState, useEffect } from "react";
-import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import * as SecureStore from "expo-secure-store"
+import * as ImagePicker from "expo-image-picker";
+import { useEffect, useState } from "react";
 
 const AVATAR_KEY = (id) => `users/${id}/avatar`;
-const AVATAR_DIR = new FileSystem.Directory(FileSystem.Paths.document, 'users/')
+const AVATAR_DIR = FileSystem.Paths.document.uri + 'users/'
 
 export function useUserAvatar(userId) {
     const [avatar, setAvatar] = useState(null);
 
     // Charger l'avatar au montage
     useEffect(() => {
-        const file = new FileSystem.File(AVATAR_DIR, `${userId}/avatar.jpg`);
-        if (file.exists) {
-            setAvatar(file.uri);
+        const file = new FileSystem.File(`${AVATAR_DIR}${userId}/avatar.jpg`);
+      if (file.exists) {
+          setAvatar(file.uri + '?t=' + Date.now());
         }      
     }, [userId]);
 
-  const uploadAvatar = async () => {
-    // Demander la permission
+ const uploadAvatar = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       alert("Permission requise pour accéder à la librairie.");
       return;
     }
+   
+    
 
-    // Ouvrir le picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: 'images',
       allowsEditing: true,
-      aspect: [1, 1],   // crop carré pour un avatar
+      aspect: [1, 1],
       quality: 0.7,
     });
 
     if (result.canceled) return;
 
     const sourceUri = result.assets[0].uri;
+    
+    //Remove avatr before uploading a new one
+    removeAvatar()
 
-    const destFile = new FileSystem.File(AVATAR_DIR, `${userId}.jpg`);
+    // copy to a known file location (Apple's URI are temporary ones)
     const sourceFile = new FileSystem.File(sourceUri);
-    sourceFile.copy(destFile);
+    const destFile = new FileSystem.File(`${AVATAR_DIR}${userId}/avatar.jpg`);
 
-    setAvatar(destFile.uri);
-  };
+    // Creating the directory if necessary
+    const destDir = new FileSystem.Directory(`${AVATAR_DIR}${userId}/`);
+    if (!destDir.exists) {
+      destDir.create({ intermediates: true });
+    }
+   
+    // Final copy to known file location
+    sourceFile.copy(destFile);
+    setAvatar(destFile.uri + '?t=' + Date.now());
+};
 
   const removeAvatar = async () => {
-    const destUri = `${AVATAR_DIR}${userId}.jpg`;
-    await FileSystem.deleteAsync(destUri, { idempotent: true });
-    await AsyncStorage.removeItem(AVATAR_KEY(userId));
+    const destFile = new FileSystem.File(`${AVATAR_DIR}${userId}/avatar.jpg`);
+    if (destFile.exists) {
+      destFile.delete();
+    }
     setAvatar(null);
   };
 
