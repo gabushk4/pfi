@@ -47,7 +47,9 @@ export default function RootLayout() {
           admin TINYINT DEFAULT 0, 
           adresse VARCHAR(128), 
           langue_preferee VARCHAR(3) DEFAULT 'fr'
-        );      
+        );  
+        
+        UPDATE clients SET admin = 1 WHERE pseudo = 'alkemist';
       `); 
     }
   }
@@ -85,7 +87,7 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loggedIn) {
       router.dismissAll();
-      router.replace('/(tabs)/products' as any);
+      router.replace('/(tabs)/products');
     }
   }, [loggedIn]);
 

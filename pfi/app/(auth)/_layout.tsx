@@ -8,7 +8,7 @@ export default function AuthLayout() {
     const colors = Colors[colorScheme ?? "light"]
   return (
     <Stack
-      screenOptions={{...(getHeaderStyle(colors))}}
+      screenOptions={{...(getHeaderStyle(colors)), headerBackButtonDisplayMode:'minimal'}}
     >
       <Stack.Screen name="login" options={{ headerTitle:'Connexion', }} />
       <Stack.Screen name="register" options={{ headerTitle: 'Inscription'}} />

@@ -6,7 +6,8 @@ type Account = {
   id: number,
   emailVerified: boolean,
   address: string,
-  mdp:string
+  mdp: string,
+  admin: boolean
 }
 
 type AccountContextType = {

@@ -5,6 +5,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 import ProfilePicture from '../../../components/profilePicture';
+import { typography } from '@/constants/typography';
 
 export default function Account() {
     const colorScheme = useColorScheme()
@@ -74,7 +75,8 @@ export default function Account() {
             borderColor: colors.text,
             padding: 6,
             alignItems: 'center',
-            justifyContent:'center'
+            justifyContent: 'center',
+            zIndex: 20
         },
         editable: {
             ...(edit ? {
@@ -108,7 +110,7 @@ export default function Account() {
                 if (userId) {
                     db.runAsync(`${sql}${keys.join(', ')} WHERE id = ?`, [...values, userId])
                         .then((res) => {
-                            console.log("edit success", res)
+                            console.log("edit success", res.changes)
                         }, (reason) => {
                             console.error(reason)
                         })
@@ -133,6 +135,7 @@ export default function Account() {
             <View style={{height:124}}>
                 <ProfilePicture isEditing={edit} pointerEvents="auto"/>
             </View>
+            {account?.admin && <Text style={[typography.body, { color: colors.tint }]}>Admin</Text>}
             <View style={s.dataContainer}>
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Pseudo: </Text>

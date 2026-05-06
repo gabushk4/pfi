@@ -28,7 +28,7 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
     const insets = useSafeAreaInsets()
     const openMenuAnim = useAnimatedValue(1)
 
-    const { account } = useAccount()
+    const { account, logout } = useAccount()
 
     const openMenu = () => {
         Animated.timing(openMenuAnim, {
@@ -128,18 +128,27 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
             <Text style={[typography.title, {color:colors.text, marginBottom:16}]}>Menu</Text>
             
             <View style={s.menuSection}>
-                    <Text style={[typography.subtitle, { color: colors.text }]}>Compte de { account.username }</Text>
+                    <Text style={[typography.subtitle, { color: colors.text }]}>Compte de { account?.username }</Text>
                 <View style={{ alignItems:'center', justifyContent:'space-between', flexDirection: 'row', gap:8 }}>
                     <Pressable style={{height: 80, width: 80 }} onPress={() => {
                         console.log('profile pressed')
-                        setIsMenuOpen(false)
+                            setIsMenuOpen(false)
+                            
                         setTimeout(() => {
                             route.replace('/(tabs)/account')
                         }, 600)
                     }}>
                         <ProfilePicture isEditing={false} pointerEvents="none" />
                     </Pressable>
-                    <TouchableOpacity style={{padding:8, width:'50%',alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:colors.tint}}>
+                        <TouchableOpacity style={{ padding: 8, width: '50%', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tint }}
+                            onPress={() => {
+                                setIsMenuOpen(false)
+                                setTimeout(() => {
+                                    route.replace('/(auth)/login')
+                                    logout()    
+                                }, 600)                                
+                            }}
+                        >
                         <MaterialCommunityIcons name='logout' color={colors.tint} size={32}/>
                     </TouchableOpacity>
                 </View>
