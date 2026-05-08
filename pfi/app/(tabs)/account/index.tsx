@@ -89,6 +89,7 @@ export default function Account() {
     })
 
     useEffect(() => {
+        console.log(account)
         if (!edit) { // if we finished editing, we save the changes
             const sql = "UPDATE clients SET "
             const keys: string[] = []
