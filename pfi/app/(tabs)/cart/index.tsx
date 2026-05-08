@@ -31,7 +31,7 @@ export default function Cart() {
     const proceedToPayment = () => {
         const bill = `${items.map((item : CartItem) =>
             `${item.name} x${item.quantity} | ${(item.price * item.quantity).toFixed(2)}$`)
-            .join('\n--------------------')}\n\nTotal : ${total.toFixed(2)}`
+            .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
         
         emailjs.send('service_gtswpxs', 'template_2rnemwe', {
             to_name: account?.username,
