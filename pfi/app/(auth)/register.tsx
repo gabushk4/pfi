@@ -4,8 +4,11 @@ import { Link, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import GooglePlacesTextInput from 'react-native-google-places-textinput'
+import AdressAutocomplete from '../../components/adressAutocomplete'
 
 export default function Register() {
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyDL41cySPv0G0GsiKsVItoT4tYGlSgwE6M'
 
     const db = useSQLiteContext()
     const router = useRouter()
@@ -124,11 +127,7 @@ export default function Register() {
                     secureTextEntry={true}
                     
                 />
-                <TextInput style={s.input}
-                    placeholder='Adresse'
-                    value={adress}
-                    onChangeText={(text) => setAdress(text)}                    
-                />
+                <AdressAutocomplete inputStyle={s.input} value={adress} setValue={setAdress}/>
             </Pressable>
             <Link href={'/(auth)/login'}>
                 <Text style={[typography.body, { color: colors.text, opacity: 0.6, textDecorationLine: 'underline', textDecorationColor: colors.tint, }]}>Déjà un compte?</Text>

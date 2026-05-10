@@ -3,9 +3,10 @@ import { useAccount } from '@/contexts/account';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 import ProfilePicture from '../../../components/profilePicture';
 import { typography } from '@/constants/typography';
+import AdressAutocomplete from '@/components/adressAutocomplete';
 
 export default function Account() {
     const colorScheme = useColorScheme()
@@ -25,7 +26,7 @@ export default function Account() {
             alignItems: 'center',
             width: '100%',
             justifyContent: 'center',
-            gap:32
+            gap: 32
         },
         dataContainer: {
             borderWidth: 1,
@@ -36,28 +37,29 @@ export default function Account() {
             backgroundColor: colors.background,
             gap: 16,
             width: '80%',
-            alignItems:'center'
+            alignItems: 'center'
         },
         dataLine: {
             flexDirection: "row",
-            width: '100%'            
+            width: '100%'
         },
         dataLabel: {
             color: colors.text,
             opacity: 0.3,
             fontSize: 20,
             width: "48%",
-            fontFamily:"Macondo"
+            fontFamily: "Macondo"
         },
         data: {
-            alignSelf:'center',
+            alignSelf: 'center',
             color: colors.text,
             fontSize: 20,
-            maxWidth: '52%',     
+            maxWidth: '52%',
             flexWrap: 'wrap',
             fontFamily: "Macondo",
             borderRadius: 8,
-            borderColor:colors.tint,
+            borderColor: colors.tint,
+            backgroundColor: 'transparent',
         },
         line: {
             height: 1,
@@ -82,9 +84,14 @@ export default function Account() {
             ...(edit ? {
                 borderWidth: 1,
                 padding: 6,
-                zIndex:20
-            }:{})
+                zIndex: 20
+            } : {})
             
+        },
+        address: {
+            width: '130%',
+            backgroundColor: 'transparent',
+            fontSize:16,
         }
     })
 
@@ -98,10 +105,14 @@ export default function Account() {
             if (account?.mdp !== userMdp && userMdp !== undefined) {
                 keys.push('mdp = ?')
                 values.push(userMdp)
+                if(account)
+                    account.mdp = userMdp
             }
             if (account?.address !== userAddress && userAddress !== undefined) {
                 keys.push('adresse = ?')
                 values.push(userAddress)
+                if(account)
+                    account.address = userAddress
             }   
 
             console.log("update executed", keys.length>0)
@@ -124,7 +135,7 @@ export default function Account() {
     }, [edit])
 
     return (
-        <View style={s.container} >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.container} >
             {Keyboard.isVisible() && 
                 <Pressable style={{ top: 0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 10 }}
                     onPress={() => {
@@ -156,15 +167,17 @@ export default function Account() {
                 <View style={s.line} />
                 <View style={s.dataLine}>
                     <Text style={s.dataLabel}>Adresse: </Text>
-                    <TextInput 
-                        numberOfLines={2} 
-                        multiline={true}
-                        style={[s.data, s.editable]}
-                        value={userAddress}
-                        onChangeText={(text) => {
-                            setUserAddress(text)
-                        }}
-                    />
+                    <View style={[s.data, s.editable, {position:'relative', left:-12, padding:0}]}>
+                        <AdressAutocomplete
+                            inputStyle={s.address}
+                            value={userAddress}
+                            setValue={setUserAddress}
+                            showClearButton={edit}
+                            readOnly={!edit}
+                            numberOfLines={2}
+                        />
+                    </View>
+                    
                 </View>
                 <View style={s.line}/>
                 <View style={s.dataLine}>
@@ -181,7 +194,7 @@ export default function Account() {
             <TouchableOpacity onPress={()=> setEdit(!edit)} style={s.editBtn}>
                 <MaterialCommunityIcons name="circle-edit-outline" size={32} color={colors.tint} />
             </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

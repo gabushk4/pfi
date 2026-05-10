@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Alert } from 'react-native/Libraries/Alert/Alert';
+import { Alert } from 'react-native';
 
 type Cart = {
     id_client: number,

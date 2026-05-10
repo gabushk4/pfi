@@ -29,23 +29,26 @@ export default function Cart() {
     const [isPayModalOpen, setIsPayModalOpen] = useState(false)
     
     const proceedToPayment = () => {
-        const bill = `${items.map((item : CartItem) =>
-            `${item.name} x${item.quantity} | ${(item.price * item.quantity).toFixed(2)}$`)
-            .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
+        if (account != null) {
+            const bill = `${items.map((item: CartItem) =>
+                `${item.name} x${item.quantity} | ${(item.price * item.quantity).toFixed(2)}$`)
+                .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
         
-        emailjs.send('service_gtswpxs', 'template_2rnemwe', {
-            to_name: account?.username,
-            to_email: account?.email,
-            message: `Merci pour votre achat ! Voici le récapitulatif de votre commande :\n\n${bill}$`
-        }, { publicKey: 'IdQYymNrJn-IF0e0I' }
-        )
-            .then(() => {
-                const cartPayed = payCart(account?.id ?? 0)
-                setIsPayModalOpen(cartPayed)
-            })
-            .catch(() => {
-                Alert.alert("Erreur", "Une erreur est survenue lors de l'envoi de l'email de confirmation. Veuillez réessayer.")
-            });        
+            emailjs.send('service_gtswpxs', 'template_2rnemwe', {
+                to_name: account?.username,
+                to_email: account?.email,
+                message: `Merci pour votre achat ! Voici le récapitulatif de votre commande :\n\n${bill}$`
+            }, { publicKey: 'IdQYymNrJn-IF0e0I' }
+            )
+                .then(() => {
+                    const cartPayed = payCart(account?.id ?? 0)
+                    setIsPayModalOpen(cartPayed)
+                })
+                .catch(() => {
+                    Alert.alert("Erreur", "Une erreur est survenue lors de l'envoi de l'email de confirmation. Veuillez réessayer.")
+                });
+        } else
+            Alert.alert("Erreur", "Vous devez être connecté pour passer une commande.")
     }
 
     const s = StyleSheet.create({

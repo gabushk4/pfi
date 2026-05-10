@@ -10,8 +10,9 @@ import AccountMenu from './accountMenu';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useAccount } from '@/contexts/account';
 import { useRouter } from 'expo-router';
+import { useMenu } from '@/contexts/menu';
 
-export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, setIsMenuOpen, setLanguage, language }) {
+export default function MainMenu({ isMenuOpen, setIsModalOpen, setIsMenuOpen, setLanguage, language }) {
 
     //TODO: insert into internationalisation context
   const languages = [
@@ -22,13 +23,14 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
     
     const route = useRouter()
     
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"]
-  const screenWidth = Dimensions.get("screen").width
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme ?? "light"]
+    const screenWidth = Dimensions.get("screen").width
     const insets = useSafeAreaInsets()
     const openMenuAnim = useAnimatedValue(1)
 
     const { account, logout } = useAccount()
+    const { openFrom } = useMenu()
 
     const openMenu = () => {
         Animated.timing(openMenuAnim, {
@@ -59,6 +61,10 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
         }, 500)
     }
     }, [isMenuOpen])
+
+    useEffect(() => {
+        console.log("open from changed : ", openFrom)
+    }, [openFrom])
     
     const menuContent = {
         "account": <AccountMenu isMenuOpen={isMenuOpen} />
@@ -92,25 +98,25 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
       width: '100%',
       gap:4
     }
-  })
+    })
 
     
     return (
         <Animated.View style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: '100%',
-                  height: '100%',  
-                  alignItems: 'flex-end',
-                  flexDirection:'row',
-                  transform: [{
-                    translateX: openMenuAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange:[0, screenWidth * 0.6]
-                  }) }]
-                }}>   
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',  
+            alignItems: 'flex-end',
+            flexDirection:'row',
+            transform: [{
+                translateX: openMenuAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange:[0, screenWidth * 0.6]
+            }) }]
+        }}>   
         <Pressable
             style={{width:"40%", height:'100%', backgroundColor:colors.backdrop}}
             onPress={()=>setIsMenuOpen(false)}
@@ -177,7 +183,7 @@ export default function MainMenu({ isMenuOpen, menuOpenFrom, setIsModalOpen, set
                 })}
                 </View>  
             </View>
-                {menuContent[menuOpenFrom]}            
+                {menuContent[openFrom]}            
             <TouchableOpacity style={{ position: 'absolute', bottom:0, height:64, width:'100%', }}
                 onPress={() => {
                 setIsMenuOpen(false)
