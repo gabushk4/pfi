@@ -1,16 +1,16 @@
-import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions, Image, useColorScheme } from 'react-native';
-import { useRouter } from 'expo-router';
-import { typography } from '@/constants/typography';
 import Colors from '@/constants/Colors';
+import { typography } from '@/constants/typography';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function Landing() {
     const router = useRouter();
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const window = Dimensions.get("window");
-
-    return (
+    try{
+return (
         <View style={[s.container, {height:window.height, width:window.width}]}>
             <View style={[s.slot]}>
                     <Text style={[typography.title, { fontSize: 64, color: colors.tint }]}>Arcane</Text>
@@ -39,6 +39,11 @@ export default function Landing() {
             </View>
         </View>
     );
+    }
+    catch(e) {
+        console.log(e);
+    }
+    
 }
 
 const s = StyleSheet.create({
