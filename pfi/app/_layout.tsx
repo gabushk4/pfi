@@ -10,6 +10,9 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { AccountProvider, useAccount } from '@/contexts/account';
+import Cart from './(tabs)/cart';
+import { CartProvider } from '@/contexts/cart';
+import { MenuProvider } from '@/contexts/menu';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -77,10 +80,15 @@ export default function RootLayout() {
   }
 
   return (
+
     <SQLiteProvider databaseName='pfi' onInit={initDB}>
-    <AccountProvider>
-      <RootLayoutNav />
-    </AccountProvider>
+      <MenuProvider>
+      <CartProvider>
+      <AccountProvider>
+        <RootLayoutNav />
+      </AccountProvider>
+      </CartProvider>
+      </MenuProvider>
     </SQLiteProvider>
   );
 }
@@ -98,7 +106,7 @@ function RootLayoutNav() {
     }
   }, [loggedIn]);
 
-  return (
+  return (    
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>   
       <Stack
         screenOptions={{
@@ -112,6 +120,6 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false, headerBackVisible:true}} />
       </Stack>
-    </ThemeProvider>
+      </ThemeProvider>
   );
 }

@@ -28,7 +28,6 @@ export default function TabLayout() {
   
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [menuOpenFrom, setMenuOpenFrom] = useState<'account' | 'index'>('index')
   
   useEffect(() => {
     if(isMenuOpen)
@@ -41,7 +40,7 @@ export default function TabLayout() {
         visible={isModalOpen}
         transparent={true}
       >
-        <MainMenu isMenuOpen={isMenuOpen} menuOpenFrom={menuOpenFrom} setIsModalOpen={setIsModalOpen} setIsMenuOpen={setIsMenuOpen} setLanguage={ setLanguage} language={language}/>
+        <MainMenu isMenuOpen={isMenuOpen} setIsModalOpen={setIsModalOpen} setIsMenuOpen={setIsMenuOpen} setLanguage={ setLanguage} language={language}/>
       </Modal>
       <Tabs
         screenOptions={{...(getHeaderStyle(colors)), 
