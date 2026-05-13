@@ -1,3 +1,5 @@
+//Gabriel Pereira Levesque
+
 import Colors from '@/constants/Colors';
 import { typography } from '@/constants/typography';
 import { Link, useRouter } from 'expo-router';
@@ -8,8 +10,6 @@ import GooglePlacesTextInput from 'react-native-google-places-textinput'
 import AdressAutocomplete from '../../components/adressAutocomplete'
 
 export default function Register() {
-    const GOOGLE_MAPS_API_KEY = 'AIzaSyDL41cySPv0G0GsiKsVItoT4tYGlSgwE6M'
-
     const db = useSQLiteContext()
     const router = useRouter()
     const colorScheme = useColorScheme()
@@ -83,6 +83,8 @@ export default function Register() {
 
     const [courrielValide, setCourrielValide] = useState(true)
 
+
+    // Impossible to send a verification email since no server can receive the web request to update email_verfied_at
     const inscription = async () => {
         const row = await db.runAsync('INSERT INTO clients (pseudo, mdp, courriel, adresse) VALUES(?, ?, ?, ?)', [pseudo.trim(), mdp.trim(), courriel.trim(), adress.trim()])
         if (row.changes > 0) {

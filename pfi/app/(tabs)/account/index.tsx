@@ -1,3 +1,5 @@
+//Gabriel Pereira Levesque
+
 import Colors from '@/constants/Colors';
 import { useAccount } from '@/contexts/account';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';

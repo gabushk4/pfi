@@ -1,11 +1,11 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Redirect, Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useSQLiteContext, SQLiteProvider, SQLiteDatabase } from 'expo-sqlite';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
@@ -16,7 +16,7 @@ import { MenuProvider } from '@/contexts/menu';
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+  ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
@@ -51,6 +51,13 @@ export default function RootLayout() {
           adresse VARCHAR(128), 
           langue_preferee VARCHAR(3) DEFAULT 'fr'
         );  
+        CREATE TABLE IF NOT EXISTS produits (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nom VARCHAR(50) NOT NULL,
+        description VARCHAR(50) NOT NULL,
+        prix FLOAT NOT NULL,
+        image VARCHAR(50) NOT NULL
+        );
         
         UPDATE clients SET admin = 1 WHERE pseudo = 'alkemist';
       `); 
@@ -73,7 +80,6 @@ export default function RootLayout() {
   }
 
   return (
-
     <SQLiteProvider databaseName='pfi' onInit={initDB}>
       <MenuProvider>
       <CartProvider>

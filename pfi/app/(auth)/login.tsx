@@ -1,3 +1,5 @@
+//Gabriel Pereira Levesque
+
 import Colors from '@/constants/Colors';
 import { typography } from '@/constants/typography';
 import { useAccount } from '@/contexts/account';
@@ -6,6 +8,26 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 
+
+type User = {
+    id: number,
+    pseudo: string,
+    courriel: string,
+    adresse: string,
+    mdp: string,
+    admin: number,
+    courriel_verifie_a: Date | null
+}
+
+const defaultUser : User = {
+    id: 0,
+    pseudo: "defaut",
+    courriel: "defaut",
+    adresse: "defaut",
+    mdp: "mdp",
+    admin: 0,
+    courriel_verifie_a: null
+}
 
 export default function Login() {
     const colorScheme = useColorScheme();
@@ -18,15 +40,16 @@ export default function Login() {
     const [mdp, setMdp] = useState('')
 
     const connection = async () => {
-        let user = await db.getFirstAsync('SELECT * FROM clients WHERE pseudo = ?', [pseudo.trim()])
-        if (user) {
+        let user: User = await db.getFirstAsync('SELECT * FROM clients WHERE pseudo = ?', [pseudo.trim()]) ?? defaultUser
+        if (user.id != 0) {
             let account = {
                 id: user.id,
                 username: user.pseudo,
                 email: user.courriel,
                 address: user.adresse,
                 mdp: user.mdp,
-                admin: user.admin === 1
+                admin: user.admin === 1,
+                emailVerified: user.courriel_verifie_a != null
             }
             login(account)
         } else {

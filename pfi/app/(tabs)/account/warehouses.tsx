@@ -1,3 +1,5 @@
+//Gabriel Pereira Levesque
+
 import Colors from '@/constants/Colors';
 import { useAccount } from '@/contexts/account';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -24,6 +26,11 @@ export default function Warehouses() {
         longitude: number
     }
 
+    type GeocodeLoc = {
+        lat: number | null,
+        lng: number | null
+    }
+
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? 'light']
 
@@ -35,19 +42,28 @@ export default function Warehouses() {
 
     const icons = {
         warehouse: colorScheme === 'dark' ? require('../../../assets/images/warehouse-dark.png') : require('../../../assets/images/warehouse-light.png'),
-        house: colorScheme === 'dark' ? require('../../../assets/images/house-dark.png') : require('../../../assets/images/house-light.png')
+        house: colorScheme === 'dark' ? require('../../../assets/images/house-dark.png') : require('../../../assets/images/house-light.png'),
+        default: colorScheme === 'dark' ? require('../../../assets/images/default_pfp_dark.png') : require('../../../assets/images/default_pfp_light.png')
     }
 
     const [highlitedWarehouse, setHighlitedWarehouse] = useState<number | null>(null)
-    const [region, setRegion] = useState<Region>() //TODO: set defualt region to user's adress using geocoding API
+    const [region, setRegion] = useState<Region>()
     const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null)
     const [nearestWarehousePoints, setNearestWarehousePoints] = useState<Points[]>([])
+    const [isCellLoc, setIsCellLoc] = useState(false) // To signify if we show the house icon or the marker icon
 
-    const getLocation = async () => {
+
+    //Gets cell location using Expo-Location
+    const getLocation = async () : Promise<Region> => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             console.log('Permission to access location was denied');
-            return;
+            return {
+                longitude: 0,
+                latitude: 0,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1
+            }
         }
 
         let location = await Location.getCurrentPositionAsync({});
@@ -60,12 +76,13 @@ export default function Warehouses() {
         }
     }
 
-    const getUserLocation = async () => { 
+    // Gets user's address location using geocoding's API
+    const getUserLocation = async () : Promise<Region> => { 
         let userAdress = account?.address        
-        userAdress = userAdress?.replaceAll(' ', '+').replaceAll(',', '') //Formats user adress to a qeury string for geocode API
+        userAdress = userAdress?.replaceAll(' ', '+').replaceAll(',', '') //Formats user adress to a query string for geocode API
 
         let userCountry = userAdress?.substring(userAdress.lastIndexOf('+')) ?? '' //Gets the full country string plus the + sign out of userAdress
-        let userCountryCode = userCountry?.substring(0, 3).toUpperCase().replace('+', '') ?? '' //Parses userCountry to a country code
+        let userCountryCode = userCountry?.substring(0, 3).toUpperCase().replace('+', '') ?? '' //Parses userCountry to a country code eg. +Canada -> CA
 
         userAdress = userAdress?.replace(userCountry, '') //Removes userCountry from the query string
 
@@ -73,30 +90,52 @@ export default function Warehouses() {
 
         const data = await res.json()
 
-        const location = data.results[0].location
-        
-        setUserLocation({
-            latitude: location.lat,
-            longitude: location.lng
-        })
 
-        if(location){
-            //Now that we have its location, let's find the nearest warehouse
-            const nearestWarehouse = findNearestWarehouse({ longitude: location.lng, latitude: location.lat })
-            
-            if(nearestWarehouse){
-                //Now that we have the nearest warehouse, let's fetch its route from user location
-                //origin being the user location and destination being the warehouse
-                fetchRoute({ latitude: location.lat, longitude: location.lng }, { latitude: nearestWarehouse.latitude, longitude: nearestWarehouse.longitude })
-                    .then((points) => {
-                        setNearestWarehousePoints(points)
-                    })
-                    .catch(err =>
-                        console.log("cant fetch points", err.message)
-                    )
+        let location:GeocodeLoc = data.results[0].location
 
+        console.log("location", location)
+
+        if (Object.values(location)[0] == null) //location was not found
+        {
+            console.log("isCellLoc true")
+            setIsCellLoc(true)
+            //lets get the cell location instead
+            const cellLocation = await getLocation()
+
+            location = { //format to geocode format
+                lat: cellLocation.latitude,
+                lng: cellLocation.longitude
             }
         }
+        else {
+            setIsCellLoc(false)
+        }
+        
+        setUserLocation({
+            latitude: location.lat ?? 0,
+            longitude: location.lng ?? 0
+        })
+        // let's find the nearest warehouse
+        const nearestWarehouse = findNearestWarehouse({ longitude: location.lng ?? 0, latitude: location.lat ?? 0 })
+        
+        if(nearestWarehouse){
+            //Now that we have the nearest warehouse, let's fetch its route from user location
+            //origin being the user location and destination being the warehouse
+            fetchRoute(/* origin */{ latitude: location.lat ?? 0, longitude: location.lng ?? 0}, /* destination */{ latitude: nearestWarehouse.latitude, longitude: nearestWarehouse.longitude })
+                .then((points) => {
+                    setNearestWarehousePoints(points)
+                })
+                .catch(err =>
+                    console.log("cant fetch points", err.message)
+                )
+        }
+
+        return {
+            latitude: location.lat ?? 0,
+            longitude: location.lng ?? 0,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1
+        }       
     }
 
     const findNearestWarehouse = (userLoc: {latitude: number, longitude: number}) => {
@@ -163,14 +202,15 @@ export default function Warehouses() {
     }
     
     useEffect(() => {
-        getLocation().then((location) => {
-            if (location) {
-                setRegion(location)
-            }
-        })
-
         getUserLocation()
+            .then(loc => {
+                setRegion(loc);
+            })
     }, [])
+
+    useEffect(() => {
+        console.log('cell loc', isCellLoc)
+    }, [isCellLoc])
 
     const s = StyleSheet.create({
         container: {
@@ -217,9 +257,9 @@ export default function Warehouses() {
                     style={{ height: '100%', width: '100%' }}
                     region={region}
                 >
-                    {warehouses.map((warehouse) => {
+                    {warehouses.map((warehouse, i) => {
                         return (
-                            <>
+                            <View key={`w-${i}`}>
                                 <Marker
                                     key={warehouse.id}
                                     coordinate={{latitude: warehouse.latitude, longitude: warehouse.longitude}}
@@ -235,7 +275,7 @@ export default function Warehouses() {
                                     strokeWidth={5}
                                     strokeColor={highlitedWarehouse === warehouse.id ? colors.tint : colors.background}
                                 />
-                            </>
+                            </View>
                         )
                     })}
                     <Marker
@@ -244,9 +284,9 @@ export default function Warehouses() {
                             longitude: userLocation?.longitude ?? 0
                         }}
                         title={`Votre maison`} /* TODO: internationalize */
-                        description={`C'est votre maison`} //TODO: internationalize
-                        pinColor='blue'
-                        icon={icons.house}
+                        description={`C'est votre maison`} //TODO: internationalize                       
+                        
+                        {...(isCellLoc ? {icon: icons.default} : { icon: icons.house })}
                     />
                     {/* Road to nearest warehouse */}
                     <Polyline
