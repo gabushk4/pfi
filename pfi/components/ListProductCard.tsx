@@ -1,10 +1,31 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-
 import { View } from './Themed';
 
 
 const ListProductCard = (produit: any) => {
+  const styles = StyleSheet.create({
+    listProductCard: {
+      width:'100%',
+      alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'row',
+      borderColor: 'green',
+      borderStyle: 'solid',
+      borderWidth: 1,
+      margin: 3,
+
+    },
+    listProductCardData: {
+      textAlign: 'center',
+      flex: 1,
+      color: "white",
+      fontSize: 18,
+    },
+
+
+
+  });
   console.log("entering listProductCard : produit = " + produit.item);
   let { id, nom, description, prix, image } = produit.item;
   return (
@@ -22,24 +43,3 @@ const ListProductCard = (produit: any) => {
   );
 }
 export default ListProductCard;
-const styles = StyleSheet.create({
-  listProductCard: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    borderColor: 'red',
-    borderStyle: 'solid',
-    borderWidth: 1,
-
-  },
-  listProductCardData: {
-    flex: 1,
-    color: "white",
-    borderColor: 'red',
-    borderStyle: 'solid',
-    borderWidth: 3,
-  },
-
-
-
-});
