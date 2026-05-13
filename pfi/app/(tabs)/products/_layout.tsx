@@ -1,12 +1,13 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
 
 export default function ProductsLayout() {
     return (
-        <Stack>
-            <Stack.Screen
-                name="index" options={{headerShown:false}}
-            />
+        <Stack >
+            <Stack.Screen name="index" options={{ headerShown: false, headerLeft: () => null }} />
+            <Stack.Screen name="[id]" options={{
+                headerBackVisible: true, headerTitle: "Détails"
+            }} />
         </Stack>
+
     )
 }

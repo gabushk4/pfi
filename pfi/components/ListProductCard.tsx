@@ -1,16 +1,15 @@
+import { router } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { View } from './Themed';
-
 
 const ListProductCard = (produit: any) => {
   const styles = StyleSheet.create({
     listProductCard: {
-      width:'100%',
       alignItems: 'center',
       display: 'flex',
       flexDirection: 'row',
-      borderColor: 'green',
+      borderColor: 'red',
       borderStyle: 'solid',
       borderWidth: 1,
       margin: 3,
@@ -28,6 +27,8 @@ const ListProductCard = (produit: any) => {
   });
   console.log("entering listProductCard : produit = " + produit.item);
   let { id, nom, description, prix, image } = produit.item;
+  const fleche = "->"
+  console.log(" listProductCard produit : " + produit.item);
   return (
     <View style={styles.listProductCard}>
       <Text style={styles.listProductCardData}>
@@ -39,6 +40,14 @@ const ListProductCard = (produit: any) => {
       <Text style={styles.listProductCardData}>
         {prix}
       </Text>
+      <Pressable onPress={() => {
+        router.navigate({pathname: "/products/[id]", params: { id: id}})
+      }}>
+      <Text style={styles.listProductCardData}>
+        Details {fleche}
+      </Text>
+      </Pressable>
+
     </View>
   );
 }

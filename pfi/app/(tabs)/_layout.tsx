@@ -20,17 +20,17 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  
+
   const [language, setLanguage] = useState("auto")
 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"]
-  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  
+
   useEffect(() => {
-    if(isMenuOpen)
+    if (isMenuOpen)
       setIsModalOpen(isMenuOpen)
   }, [isMenuOpen])
 
@@ -40,35 +40,46 @@ export default function TabLayout() {
         visible={isModalOpen}
         transparent={true}
       >
-        <MainMenu isMenuOpen={isMenuOpen} setIsModalOpen={setIsModalOpen} setIsMenuOpen={setIsMenuOpen} setLanguage={ setLanguage} language={language}/>
+        <MainMenu isMenuOpen={isMenuOpen} setIsModalOpen={setIsModalOpen} setIsMenuOpen={setIsMenuOpen} setLanguage={setLanguage} language={language} />
       </Modal>
       <Tabs
-        screenOptions={{...(getHeaderStyle(colors)), 
+        screenOptions={{
+          ...(getHeaderStyle(colors)),
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           // Disable the static render of the header on web
           // to prevent a hydration error in React Navigation v6.
           headerShown: useClientOnlyValue(false, true),
-        }}>  
+        }}>
         <Tabs.Screen
           name="products"
           options={{
             headerTitle: "Produits", //TODO: internationaliser
             title: "Produits", //TODO: internationaliser
             tabBarIcon: ({ color }) => <MaterialCommunityIcons name="crystal-ball" size={24} color={color} />,
-            headerRight:() => <HeaderRight currentLanguage={language} currentPage="products" onMenuClick={()=> setIsMenuOpen(true)}/>
-          }}/>
+            headerRight: () => <HeaderRight currentLanguage={language} currentPage="products" onMenuClick={() => setIsMenuOpen(true)} />
+          }} />
         <Tabs.Screen
-        name="cart"
+          name="cart"
           options={{
             headerTitle: "Panier", //TODO: internationaliser
             title: "Panier", //TODO: internationaliser
             tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cart" size={24} color={color} />,
-            headerRight:() => <HeaderRight currentLanguage={language} currentPage="cart" onMenuClick={()=> setIsMenuOpen(true)}/>
-          }}/>
+            headerRight: () => <HeaderRight currentLanguage={language} currentPage="cart" onMenuClick={() => setIsMenuOpen(true)} />
+          }} />
         <Tabs.Screen name="account"
           options={{
             headerTitle: "Compte", //TODO: internationaliser
             title: "Compte", //TODO: internationaliser
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
+            headerRight: () => <HeaderRight currentLanguage={language} currentPage="account"
+              onMenuClick={() => {
+                setIsMenuOpen(true)
+              }} />
+          }} />
+        <Tabs.Screen name="admin"
+          options={{
+            headerTitle: "Admin", //TODO: internationaliser
+            title: "Admin", //TODO: internationaliser
             tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
             headerRight: () => <HeaderRight currentLanguage={language} currentPage="account"
               onMenuClick={() => {

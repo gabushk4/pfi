@@ -4,7 +4,7 @@ export default function AdminLayout() {
     return (
         <Stack>
             <Stack.Screen
-                name="admin" options={{headerShown:false}}
+                name="index" options={{headerShown:false}}
             />
         </Stack>
     )
