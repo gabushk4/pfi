@@ -52,7 +52,6 @@ export default function Warehouses() {
     const [nearestWarehousePoints, setNearestWarehousePoints] = useState<Points[]>([])
     const [isCellLoc, setIsCellLoc] = useState(false) // To signify if we show the house icon or the marker icon
 
-
     //Gets cell location using Expo-Location
     const getLocation = async () : Promise<Region> => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -93,11 +92,8 @@ export default function Warehouses() {
 
         let location:GeocodeLoc = data.results[0].location
 
-        console.log("location", location)
-
         if (Object.values(location)[0] == null) //location was not found
         {
-            console.log("isCellLoc true")
             setIsCellLoc(true)
             //lets get the cell location instead
             const cellLocation = await getLocation()

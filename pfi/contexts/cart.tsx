@@ -1,5 +1,7 @@
+import { useSQLiteContext } from 'expo-sqlite';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Alert } from 'react-native';
+import Product from '@/constants/Product';
 
 type Cart = {
     id_client: number,
@@ -7,13 +9,22 @@ type Cart = {
     quantity: number
 }
 
+export type CartItem = {
+    id: number;
+    id_client: number;
+    quantity: number;
+    nom: string;
+    prix: number;
+}
+
 type CartContextType = {
     cart: Cart[];
     addToCart: (id_product: number, quantity: number, client_id: number) => void;
     removeFromCart: (id_product: number, client_id: number) => void;
     clearCart: (client_id: number) => void;
-    modifyCart: (id_product: number, newQuantity: number, client_id: number) => boolean;
-    payCart: (client_id: number) => boolean;
+    modifyCart: (id_product: number, newQuantity: number, client_id: number) => Promise<boolean>;
+    payCart: (client_id: number) => Promise<boolean>;
+    itemInCart: (id_product: number, client_id: number) => Cart | undefined
 }
 
 const CartContext = createContext<CartContextType>({
@@ -21,58 +32,51 @@ const CartContext = createContext<CartContextType>({
     addToCart: () => {},
     removeFromCart: () => {},
     clearCart: () => { },
-    modifyCart: () => { return true },
-    payCart: () => { return true }
+    modifyCart: async () => { return true },
+    payCart: async () => { return true },
+    itemInCart: () => undefined
 })
 
-export function CartProvider({ children }: { children: ReactNode }) {
-    const productsDatabase = [
-        {
-            id_product: 1,
-            name: "Produit 1",
-            price: 10,
-            inventory: 10
-        },
-        {
-            id_product: 2,
-            name: "Produit 2",
-            price: 20,
-            inventory: 5
-        },
-        {
-            id_product: 3,
-            name: "Produit 3",
-            price: 15,
-            inventory: 8
-        }
-    ]
+export function CartProvider({ children }: { children: ReactNode }) {    
+    const db = useSQLiteContext()
     const hcItems = [
         {
             id_product: 1,
             id_client: 2,
             quantity: 2
-        },
-        {
-            id_product: 2,
-            id_client: 2,
-            quantity: 1
         }
     ]
     
     const [cart, setCart] = useState<Cart[]>(hcItems)
 
-    const addToCart = (id_product: number, quantity: number, id_client: number) => {
+    const getProductInventory = async (id_product:number): Promise<number> => {
+        const productsQty:any = await db.getFirstAsync("SELECT inventaire FROM produits WHERE id = ?", [id_product]) ?? 0
+        console.log(`product ${id_product} inventory ${productsQty.inventaire}`)
+        return productsQty.inventaire
+    }
+
+    const addToCart = async (id_product: number, quantity: number, id_client: number) => {
         if(id_client === undefined) {
             Alert.alert("Erreur", "Vous devez être connecté pour ajouter un article à votre panier.")
-        }
-        const productsQty = productsDatabase.find(p => p.id_product === id_product)?.inventory || 0
-        
-        if (quantity < productsQty) {
-            setCart(prev => [...prev, { id_product, quantity, id_client }])
-        } else {
-            Alert.alert("Erreur", "Quantité demandée supérieure à la quantité en stock.")
+            return
         }
 
+        // Item already in the cart ?
+        const existingItem = cart.find(item => item.id_product == id_product && item.id_client == id_client)
+        
+        const productInv = await getProductInventory(id_product)
+        const newQuantity = (existingItem?.quantity ?? 0) + quantity
+        if (newQuantity <= productInv) {
+            setCart(prev => {
+                return [
+                    ...prev.filter(item => item.id_product !== id_product),
+                    { id_product, quantity: newQuantity, id_client }
+                ]
+            })
+        } else {
+            Alert.alert("Erreur", "Quantité demandée supérieure à la quantité en stock.")
+            return
+        }
     }
     const removeFromCart = (id_product: number, id_client: number) => {
         if(id_client === undefined) {
@@ -80,11 +84,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
         setCart(prev => prev.filter(item => !(item.id_product === id_product && item.id_client === id_client)))        
     }
-    const modifyCart = (id_product: number, newQuantity: number, id_client: number) => {
+    const modifyCart = async (id_product: number, newQuantity: number, id_client: number) => {
         if (id_client === undefined) {
             Alert.alert("Erreur", "Vous devez être connecté pour modifier votre panier.")
         }
-        const productsQty = productsDatabase.find(p => p.id_product === id_product)?.inventory || 0
+        const productsQty = await getProductInventory(id_product)
         
         if (newQuantity <= productsQty) {
             setCart(prev => prev.map(item => {
@@ -106,35 +110,52 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setCart(prev => prev.filter(item => item.id_client !== client_id))
         console.log('Cart cleared for client_id:', client_id)
     }
-    const payCart = (client_id: number) => {
-        if (client_id === 0) { 
+    const payCart = async (client_id: number) => {
+        if (client_id === 0) {
             Alert.alert("Erreur", "Vous devez être connecté pour payer votre panier.")
             return false
         }
+
         const clientCart = cart.filter(item => item.id_client === client_id)
         if (clientCart.length === 0) {
             Alert.alert("Erreur", "Votre panier est vide.")
             return false
         }
-        for (const item of clientCart) {
-            const product = productsDatabase.find(p => p.id_product === item.id_product)
-            if (product) {
-                if (item.quantity > product.inventory) { // This should not happen if modifyCart and addToCart are correctly used, but we check just in case
-                    Alert.alert("Erreur", `La quantité demandée pour ${product.name} est supérieure à la quantité en stock.`)
-                    return false
+
+        try {
+            await db.withTransactionAsync(async () => {
+                for (const item of clientCart) {
+                    const product = await db.getFirstAsync<Product>(
+                        "SELECT * FROM produits WHERE id = ?", [item.id_product]
+                    )
+
+                    if (!product) {
+                        throw new Error("Un produit de votre panier n'existe pas.")
+                    }
+                    if (item.quantity > product.inventaire) {
+                        throw new Error(`La quantité demandée pour ${product.nom} est supérieure à la quantité en stock.`)
+                    }
+
+                    await db.runAsync(
+                        "UPDATE produits SET inventaire = inventaire - ? WHERE id = ?",
+                        [item.quantity, item.id_product]
+                    )
                 }
-                productsDatabase.find(p => p.id_product === item.id_product)!.inventory -= item.quantity // Update inventory
-            } else { 
-                Alert.alert("Erreur", "Un produit de votre panier n'existe pas.")
-                return false
-            }
-        }        
-        clearCart(client_id)
-        return true
+            })
+
+            clearCart(client_id)
+            return true
+        } catch (e: any) {
+            Alert.alert("Erreur", e.message)
+            return false
+        }
+    }
+    const itemInCart = (id_product: number, client_id: number) => {
+        return cart.find(item => item.id_product == id_product && item.id_client == client_id)
     }
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, modifyCart, payCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, modifyCart, payCart, itemInCart }}>
             {children}
         </CartContext.Provider>
     )

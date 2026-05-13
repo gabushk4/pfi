@@ -8,7 +8,6 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 
-
 type User = {
     id: number,
     pseudo: string,

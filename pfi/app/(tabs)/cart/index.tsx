@@ -9,15 +9,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useCart } from '@/contexts/cart';
 import PayConfirmationModal from '@/components/payConfirmationModal';
 import emailjs from '@emailjs/browser';
+import ListProductCard from '@/components/ListProductCard';
+import { CartItem } from '@/contexts/cart';
 
 export default function Cart() {
-    interface CartItem {
-        id_product: number;
-        id_client: number;
-        quantity: number;
-        name: string;
-        price: number;
-    }
+    
 
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? 'light']
@@ -31,7 +27,7 @@ export default function Cart() {
     const proceedToPayment = () => {
         if (account != null) {
             const bill = `${items.map((item: CartItem) =>
-                `${item.name} x${item.quantity} | ${(item.price * item.quantity).toFixed(2)}$`)
+                `${item.nom} x${item.quantity} | ${(item.prix * item.quantity).toFixed(2)}$`)
                 .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
         
             emailjs.send('service_gtswpxs', 'template_2rnemwe', {
@@ -40,8 +36,8 @@ export default function Cart() {
                 message: `Merci pour votre achat ! Voici le récapitulatif de votre commande :\n\n${bill}$`
             }, { publicKey: 'IdQYymNrJn-IF0e0I' }
             )
-                .then(() => {
-                    const cartPayed = payCart(account?.id ?? 0)
+                .then(async () => {
+                    const cartPayed = await payCart(account?.id ?? 0)
                     setIsPayModalOpen(cartPayed)
                 })
                 .catch(() => {
@@ -111,7 +107,7 @@ export default function Cart() {
        console.log('Cart items updated:', items);
     }, [items])
 
-    const Ligne = ({ item }: { item: CartItem }) => {
+    /* const Ligne = ({ item }: { item: CartItem }) => {
         const [validQty, setValidQty] = useState<{ [key: number]: boolean }>({}) // Tracks validity of quantity for each product
 
         return (
@@ -170,7 +166,7 @@ export default function Cart() {
                 </View>
             </View>
         )
-    }
+    } */
 
     return (
         <>
@@ -189,7 +185,7 @@ export default function Cart() {
                     style={{ width: '100%', height: '100%' }}
                     data={items}
                     renderItem={({ item }) => 
-                        <Ligne item={item} />
+                        <ListProductCard produit={item} from="cart"/>
                     }
                     ListEmptyComponent={<View style={{alignItems:'center', justifyContent:'center', flex:1, height:'100%'}}>
                         <Text style={[typography.subtitle,{ color: colors.text, fontFamily: "Macondo" }]}>Votre panier est vide</Text>
