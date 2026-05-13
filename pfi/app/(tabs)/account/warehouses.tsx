@@ -52,7 +52,6 @@ export default function Warehouses() {
     const [nearestWarehousePoints, setNearestWarehousePoints] = useState<Points[]>([])
     const [isCellLoc, setIsCellLoc] = useState(false) // To signify if we show the house icon or the marker icon
 
-
     //Gets cell location using Expo-Location
     const getLocation = async () : Promise<Region> => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -93,11 +92,8 @@ export default function Warehouses() {
 
         let location:GeocodeLoc = data.results[0].location
 
-        console.log("location", location)
-
         if (Object.values(location)[0] == null) //location was not found
         {
-            console.log("isCellLoc true")
             setIsCellLoc(true)
             //lets get the cell location instead
             const cellLocation = await getLocation()
@@ -166,10 +162,10 @@ export default function Warehouses() {
             let b, shift = 0, result = 0
             do {
                 b = encoded.charCodeAt(index++) - 63 // goggle adds 63 before encoding
-                result |= (b & 0x1f) << shift //Left shifts the binary value 
-                shift += 5 //increments shift value by 5 (five bits chunk)
-            } while (b >= 0x20) //while there's another chunk that follows
-            lat += result & 1 ? ~(result >> 1) : result >> 1
+                result |= (b & 0x1f) << shift // Left shifts the binary value 
+                shift += 5 // increments shift value by 5 (five bits chunk)
+            } while (b >= 0x20) // while there's another chunk that follows
+            lat += result & 1 ? ~(result >> 1) : result >> 1 
 
             shift = 0; result = 0
             do {
@@ -200,7 +196,6 @@ export default function Warehouses() {
         const points = decodePolyline(data.routes[0].overview_polyline.points)
         return points
     }
-
     
     useEffect(() => {
         getUserLocation()

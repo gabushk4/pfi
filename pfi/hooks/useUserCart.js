@@ -1,32 +1,34 @@
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/cart";
+import { CartItem } from "@/contexts/cart"
+import { useSQLiteContext } from "expo-sqlite";
+import Product from "@/constants/Product"
 
 export default function useUserCart(clientId) { 
-    const productsDatabase = [
-        {
-            id_product: 1,
-            name: "Produit 1",
-            price: 10,
-            inventory: 10
-        },
-        {
-            id_product: 2,
-            name: "Produit 2",
-            price: 20,
-            inventory: 5
-        },
-        {
-            id_product: 3,
-            name: "Produit 3",
-            price: 15,
-            inventory: 8
-        }
-    ]
+    const db = useSQLiteContext()
     
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
 
     const { cart } = useCart();
+
+    const setItemsInfo = async (clientCart) => {
+        await Promise.all(
+            clientCart.map(async (item) => {
+                const product = await db.getFirstAsync(
+                    "SELECT * FROM produits WHERE id = ?", [item.id_product]
+                )
+                if (product) {
+                    console.log("setItemsInfo product", product)
+                    item.nom = product.nom;
+                    item.prix = product.prix;
+                    item.id = product.id
+                }
+            })
+        )
+        setItems(clientCart);
+        setTotal(clientCart.reduce((sum, item) => sum + item.prix * item.quantity, 0));
+    }
 
     useEffect(() => { 
         console.log('Cart updated:', cart);
@@ -37,18 +39,10 @@ export default function useUserCart(clientId) {
         }
 
         const clientCart = Object.values(cart).filter(item => item.id_client === clientId);
-        setItems(clientCart);
-
-        clientCart.forEach(item => {
-            const product = productsDatabase.find(p => p.id_product === item.id_product);
-            if (product) {
-                console.log('Updating item with product info:', item, product);
-                item.name = product.name;
-                item.price = product.price;
-            }
-        });
+        console.log("client cart ", clientCart)
+        setItemsInfo(clientCart)        
         
-        setTotal(clientCart.reduce((sum, item) => sum + item.price * item.quantity, 0));
+        
 
     }, [clientId, cart]);
 

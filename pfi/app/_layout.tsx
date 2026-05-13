@@ -51,14 +51,16 @@ export default function RootLayout() {
           adresse VARCHAR(128), 
           langue_preferee VARCHAR(3) DEFAULT 'fr'
         );  
+
         CREATE TABLE IF NOT EXISTS produits (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nom VARCHAR(50) NOT NULL,
-        description VARCHAR(50) NOT NULL,
-        prix FLOAT NOT NULL,
-        image VARCHAR(50) NOT NULL
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nom VARCHAR(50) NOT NULL,
+          description VARCHAR(50) NOT NULL,
+          prix FLOAT NOT NULL,
+          image VARCHAR(50) NOT NULL DEFAULT 'arcane.png',
+          inventaire INT NOT NULL DEFAULT 10
         );
-        
+
         UPDATE clients SET admin = 1 WHERE pseudo = 'alkemist';
       `); 
     }

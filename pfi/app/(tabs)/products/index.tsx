@@ -77,7 +77,8 @@ export default function Products() {
                 </View>
                 <FlatList style={{ width: 'auto' }}
                     data={produits}
-                    renderItem={ListProductCard}
+                    renderItem={({ item }) =>
+                        <ListProductCard produit={item} from='products'/>}
                     keyExtractor={item => item.id} />
             </View>
         </View>
