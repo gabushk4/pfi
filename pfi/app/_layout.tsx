@@ -80,7 +80,6 @@ export default function RootLayout() {
   }
 
   return (
-
     <SQLiteProvider databaseName='pfi' onInit={initDB}>
       <MenuProvider>
       <CartProvider>
