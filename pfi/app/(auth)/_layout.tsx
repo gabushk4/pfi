@@ -1,3 +1,5 @@
+//Gabirel Pereira Levesque
+
 import Colors from '@/constants/Colors';
 import { getHeaderStyle } from '@/constants/HeaderStyles';
 import { Stack } from 'expo-router';
