@@ -1,43 +1,45 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { View } from './Themed';
 
 
-export default function ListProductCard(props : { produit:any }) {
+const ListProductCard = (produit: any) => {
+  console.log("entering listProductCard : produit = " + produit.item);
+  let { id, nom, description, prix, image } = produit.item;
   return (
-    <View>
-      
+    <View style={styles.listProductCard}>
+      <Text style={styles.listProductCardData}>
+        {image}
+      </Text>
+      <Text style={styles.listProductCardData}>
+        {nom}
+      </Text>
+      <Text style={styles.listProductCardData}>
+        {prix}
+      </Text>
     </View>
   );
 }
-
+export default ListProductCard;
 const styles = StyleSheet.create({
-  getStartedContainer: {
+  listProductCard: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    display: 'flex',
+    flexDirection: 'row',
+    borderColor: 'red',
+    borderStyle: 'solid',
+    borderWidth: 1,
+
   },
-  homeScreenFilename: {
-    marginVertical: 7,
+  listProductCardData: {
+    flex: 1,
+    color: "white",
+    borderColor: 'red',
+    borderStyle: 'solid',
+    borderWidth: 3,
   },
-  codeHighlightContainer: {
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  helpContainer: {
-    marginTop: 15,
-    marginHorizontal: 20,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    textAlign: 'center',
-  },
+
+
+
 });
