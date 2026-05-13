@@ -53,19 +53,22 @@ export default function Products() {
 
 
     });
-    // const getProducts = async () => {
-    //     //prendre les produits de la bd
-    //     await db.getAllAsync("SELECT * FROM produits").then((p) => {
-    //         // pour obtenir tous les résultats sous forme de tableau d'objets et le mettre dans produits.
-    //         setProduits(p);
-    //     });
-    // }
-    // useEffect(() => {
-    //     //appeler la fonction
-    //     getProducts()
-    // }, []);
-    // produits hardcoded pour tester
+    const getProducts = async () => {
+        console.log('getting products')
+        //prendre les produits de la bd
+        await db.getAllAsync("SELECT * FROM produits").then((p) => {
+            console.log('products', p)
+            // pour obtenir tous les résultats sous forme de tableau d'objets et le mettre dans produits.
+            setProduits(p);
+        });
+    }
     useEffect(() => {
+        //appeler la fonction
+        getProducts()
+    }, []);
+    // produits hardcoded pour tester
+    /* useEffect(() => {
+        console.log("SetProducts")
         setProduits([
             { id: 0, nom: "item1", description: "desc item1", prix: 1.99, image: "app/assets/images/item1" },
             { id: 1, nom: "item2", description: "desc item2", prix: 2.99, image: "app/assets/images/item2" },
@@ -75,7 +78,7 @@ export default function Products() {
             { id: 5, nom: "item6", description: "desc item6", prix: 6.99, image: "app/assets/images/item6" }
         ])
 
-    }, []);
+    }, []); */
     return (
         <View style={styles.wrapper}>
             <Text style={[styles.header]}>Liste de Produits</Text>
