@@ -139,7 +139,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
             {itemInCart(produit.id, account?.id ?? 0)?.quantity}
           </Text>
         }
-        {from === "cart" ?
+        {/* {from === "cart" ?
           <Pressable
             style={{ marginTop: 14 }}
             onPress={() => {
@@ -150,7 +150,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
           </Pressable>
           :
           <MaterialCommunityIcons name='arrow-right' size={24} color={colors.tint} />
-        }
+        } */}
 
       </View>
     </Pressable>
