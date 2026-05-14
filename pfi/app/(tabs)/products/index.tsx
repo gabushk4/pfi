@@ -3,7 +3,7 @@ import Colors from '@/constants/Colors';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { FlatList, StyleSheet, useColorScheme, View } from 'react-native';
 
 export default function Products() {
     const colorScheme = useColorScheme()
@@ -29,10 +29,6 @@ export default function Products() {
             flex: 10,
             display: 'flex',
             flexDirection: 'column',
-            borderColor: 'white',
-            borderStyle: 'solid',
-            borderWidth: 1,
-
         },
         listProductCard: {
             display: 'flex',
@@ -62,12 +58,11 @@ export default function Products() {
     // useFocusEffect : chaque fois que l'index obtien le focus de l'utilisateur, on refetch les items pour les mettre a jours
     useFocusEffect(React.useCallback(() => {
         getProducts();
-    }, [])
-    );
+    }, []));
 
     return (
         <View style={styles.wrapper}>
-            <Text style={[styles.header]}>Liste de Produits</Text>
+            {/* <Text style={[styles.header]}>Liste de Produits</Text> */}
             <View style={styles.listProductCardWrapper}>
                 {/* <View style={styles.listProductCard}>
                     <Text style={styles.listProductCardData}> Image </Text>
@@ -76,7 +71,7 @@ export default function Products() {
                 <FlatList style={{ width: 'auto' }}
                     data={produits}
                     renderItem={({ item }) =>
-                        <ListProductCard produit={item} from='products'/>}
+                        <ListProductCard produit={item} from='products' />}
                     keyExtractor={item => item.id} />
             </View>
         </View>

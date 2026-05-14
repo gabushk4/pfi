@@ -20,7 +20,7 @@ const  ProductCard = ({ produit, from} : {produit: any, from: "products" | "cart
   const s = StyleSheet.create({
     card: {
       flex:5,
-      flexDirection: 'row',
+      flexDirection: 'column',
       alignItems: 'center',
       height: 104,
       width: '100%',
