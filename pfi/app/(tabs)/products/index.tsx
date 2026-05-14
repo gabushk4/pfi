@@ -69,12 +69,10 @@ export default function Products() {
         <View style={styles.wrapper}>
             <Text style={[styles.header]}>Liste de Produits</Text>
             <View style={styles.listProductCardWrapper}>
-                <View style={styles.listProductCard}>
+                {/* <View style={styles.listProductCard}>
                     <Text style={styles.listProductCardData}> Image </Text>
                     <Text style={styles.listProductCardData}> Nom </Text>
-                    <Text style={styles.listProductCardData}> Prix </Text>
-                    <Text style={styles.listProductCardData}> Details </Text>
-                </View>
+                </View> */}
                 <FlatList style={{ width: 'auto' }}
                     data={produits}
                     renderItem={({ item }) =>

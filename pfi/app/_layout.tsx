@@ -10,7 +10,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { AccountProvider, useAccount } from '@/contexts/account';
-import Cart from './(tabs)/cart';
 import { CartProvider } from '@/contexts/cart';
 import { MenuProvider } from '@/contexts/menu';
 
@@ -55,7 +54,7 @@ export default function RootLayout() {
         CREATE TABLE IF NOT EXISTS produits (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nom VARCHAR(50) NOT NULL,
-          description VARCHAR(50) NOT NULL,
+          description VARCHAR(200) NOT NULL,
           prix FLOAT NOT NULL,
           image VARCHAR(50) NOT NULL DEFAULT 'arcane.png',
           inventaire INT NOT NULL DEFAULT 10
