@@ -45,8 +45,8 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
   return (
     <View style={s.card}>
       <Image
-        source={require('../assets/images/arcane.png')}
-        style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8 }}
+        source={{uri: produit.image}}
+        style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8, marginRight:5 }}
         resizeMode='contain'
       />
 

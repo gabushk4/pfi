@@ -1,7 +1,7 @@
-import { useSQLiteContext } from 'expo-sqlite';
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { Alert } from 'react-native';
 import Product from '@/constants/Product';
+import { useSQLiteContext } from 'expo-sqlite';
+import { createContext, ReactNode, useContext, useState } from 'react';
+import { Alert } from 'react-native';
 
 type Cart = {
     id_client: number,
@@ -56,6 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     const addToCart = async (id_product: number, quantity: number, id_client: number) => {
+        console.log('enter addtocart');
         if(id_client === undefined) {
             Alert.alert("Erreur", "Vous devez être connecté pour ajouter un article à votre panier.")
             return
