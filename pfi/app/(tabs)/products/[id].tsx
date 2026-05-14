@@ -75,7 +75,7 @@ export default function Details() {
     });
     return (
         <View style={styles.wrapper}>
-            <Text style={[typography.title, { color: colors.text }, { textAlign: 'center' }]}>Details du produit</Text>
+            <Text style={[typography.title, { color: colors.text }, { textAlign: 'center' }]}>{produit[0].nom}</Text>
             {/* <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].nom}</Text>
             <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].description}</Text>
             <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].prix}$</Text>  */}
