@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/cart";
-import { CartItem } from "@/contexts/cart"
 import { useSQLiteContext } from "expo-sqlite";
-import Product from "@/constants/Product"
+import { useEffect, useState } from "react";
 
 export default function useUserCart(clientId) { 
     const db = useSQLiteContext()
@@ -22,10 +20,13 @@ export default function useUserCart(clientId) {
                     console.log("setItemsInfo product", product)
                     item.nom = product.nom;
                     item.prix = product.prix;
-                    item.id = product.id
+                    item.id = product.id;
+                    item.image = product.image;
                 }
             })
         )
+        console.log("useUserCart clientCart : ");
+        console.log(clientCart);
         setItems(clientCart);
         setTotal(clientCart.reduce((sum, item) => sum + item.prix * item.quantity, 0));
     }
