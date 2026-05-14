@@ -6,14 +6,13 @@ import { CartItem, useCart } from '@/contexts/cart';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
-import { View } from './Themed';
+import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "cart" }) => {
   const colorScheme = useColorScheme()
   const colors = Colors[colorScheme ?? 'light']
   const { account } = useAccount()
-  const { removeFromCart, modifyCart, addToCart, itemInCart } = useCart()
+  const { removeFromCart, modifyCart } = useCart()
 
   const [validQty, setValidQty] = useState<{ [key: number]: boolean }>({}) // Tracks validity of quantity for each product
 
@@ -45,7 +44,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
   return (
     <View style={s.card}>
       <Image
-        source={require('../assets/images/arcane.png')}
+        source={produit.image}
         style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8 }}
         resizeMode='contain'
       />

@@ -59,7 +59,6 @@ export default function RootLayout() {
           image VARCHAR(50) NOT NULL DEFAULT 'arcane.png',
           inventaire INT NOT NULL DEFAULT 10
         );
-
         UPDATE clients SET admin = 1 WHERE pseudo = 'alkemist';
       `); 
     }

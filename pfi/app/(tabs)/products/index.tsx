@@ -29,7 +29,6 @@ export default function Products() {
             flex: 10,
             display: 'flex',
             flexDirection: 'column',
-            borderColor: 'white',
             borderStyle: 'solid',
             borderWidth: 1,
 
@@ -67,7 +66,6 @@ export default function Products() {
 
     return (
         <View style={styles.wrapper}>
-            <Text style={[styles.header]}>Liste de Produits</Text>
             <View style={styles.listProductCardWrapper}>
                 {/* <View style={styles.listProductCard}>
                     <Text style={styles.listProductCardData}> Image </Text>
