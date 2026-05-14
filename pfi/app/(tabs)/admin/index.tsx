@@ -1,12 +1,16 @@
 import Colors from '@/constants/Colors';
 import { useSQLiteContext } from 'expo-sqlite';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
 
 export default function Admin() {
     const db = useSQLiteContext();
     const colorScheme = useColorScheme()
     const colors = Colors[colorScheme ?? 'light'];
+    const [nom, setNom] = useState('');
+    const [prix, setPrix] = useState(0.00);
+    const [desc, setDesc] = useState('');
+    const [image, setImage] = useState('');
     const styles = StyleSheet.create({
         wrapper: {
             height: '100%',
@@ -14,35 +18,22 @@ export default function Admin() {
             display: 'flex',
             flexDirection: 'column',
         },
-
-        header: {
+        inputWrapper: {
+            display: 'flex',
             flex: 1,
-            fontSize: 24,
-            color: colors.text,
-            textAlign: 'center',
-        },
-
-        listProductCardWrapper: {
-            flex: 10,
-            display: 'flex',
             flexDirection: 'column',
-            borderColor: 'white',
-            borderStyle: 'solid',
-            borderWidth: 1,
-
         },
-        listProductCard: {
+        input: {
             display: 'flex',
-            flexDirection: 'row',
-            borderColor: 'red',
+            borderColor: colors.tint,
             borderStyle: 'solid',
             borderWidth: 1,
             margin: 3,
+            color: colors.text,
 
         },
-        listProductCardData: {
+        label: {
             textAlign: 'center',
-            flex: 1,
             color: colors.text,
             fontSize: 18,
         },
@@ -56,7 +47,7 @@ export default function Admin() {
             { id: 1, nom: "Boule de crystal", description: "Boule de crystal traditionelle", prix: 79.99, image: "ball2" },
             { id: 2, nom: "Boule de crystal royale", description: "Une boule de crystal provenant des coffrages d'un royaume", prix: 149.99, image: "ball3" },
             { id: 3, nom: "Boule de crystal électronique", description: "Une boule de crystal provenant de loin. Contient une engravure 'made in china'", prix: 2.37, image: "ball4" },
-            
+
             { id: 3, nom: "Oeuf d'Ironbelly ukrainien", description: "Oeuf de dragon collecté sans cruauté", prix: 100.00, image: "egg1" },
             { id: 4, nom: "Oeuf de Norvégien à crête", description: "Oeuf de dragon collecté sans cruauté", prix: 120.00, image: "egg2" },
             { id: 5, nom: "Oeuf de Boutefeu chinois", description: "Oeuf de dragon collecté sans cruauté", prix: 110.00, image: "egg3" },
@@ -116,22 +107,65 @@ export default function Admin() {
         }
 
     }
-    const order66 = async () => {
-        const stmt = await db.prepareAsync('DELETE FROM produits WHERE 1=1');
+    const Add = async () => {
+        try {
+            const stmt = await db.prepareAsync('INSERT INTO produits (nom, description, prix, image) VALUES ($nom, $description, $prix, $image)');
+            let result = await stmt.executeAsync({ $nom: nom, $description: desc, $prix: prix, $image: image });
+            console.log("result : ", result.lastInsertRowId, result.changes);
+            setDesc('');
+            setImage('');
+            setNom('');
+            setPrix(0);
+        } catch (error) {
+            console.log(error);
+        }
 
-        let result = await stmt.executeAsync();
-        console.log("result : ", result.lastInsertRowId, result.changes);
     }
     return (
-        <View>
-            <TouchableOpacity
+        <View style={styles.wrapper}>
+            {/* <TouchableOpacity
                 onPress={InitInsert}>
                 <Text style={{ color: colors.text }}>Hydrate DB</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={order66}>
-                <Text style={{ color: colors.text }}>Hydrogen bomb</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <View style={styles.inputWrapper}>
+                <Text style={styles.label}>nom : </Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(e) => { setNom(e) }}
+                />
+            </View>
+            <View style={styles.inputWrapper}>
+                <Text style={styles.label}>prix : </Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(e) => { setPrix(Number(e)) }}
+                    keyboardType="numeric"
+                />
+
+            </View>
+
+
+            <View style={styles.inputWrapper}>
+                <Text style={styles.label}>description : </Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(e) => { setDesc(e) }}
+                />
+
+            </View>
+
+            <View style={styles.inputWrapper}>
+                <Text style={styles.label}>url de l'image : </Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(e) => { setImage(e) }}
+                />
+            </View>
+
+            <Pressable
+                onPress={Add}>
+                <Text style={{ color: colors.text }}>Ajouter</Text>
+            </Pressable>
         </View>
     )
 }

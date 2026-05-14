@@ -52,6 +52,9 @@ const  ProductCard = ({ produit, from} : {produit: any, from: "products" | "cart
           <Text style={{color: colors.text, fontSize: from === "cart" ? 16 : 24, fontFamily: "Macondo", flexWrap:"wrap"}}>
               {produit.nom}
           </Text>
+               <Text style={{color: colors.text, fontSize: from === "cart" ? 16 : 24, fontFamily: "Macondo", flexWrap:"wrap"}}>
+              {produit.description}
+          </Text>
         { from === "cart" &&
           <>
           <Text style={{ color: colors.text, fontSize: 14, fontFamily: "Macondo", opacity: 0.6 }}>

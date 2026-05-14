@@ -34,7 +34,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
       fontSize: 18,
     },
   });
-  console.log("entering listProductCard : produit = " + produit);
+
 
   if (from === 'cart')
     produit = produit as CartItem
@@ -54,10 +54,10 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
         <Text style={{ color: colors.text, fontSize: from === "cart" ? 16 : 24, fontFamily: "Macondo", flexWrap: "wrap" }}>
           {produit.nom}
         </Text>
-        {from === "cart" &&
+        {from === "cart" ?
           <>
             <Text style={{ color: colors.text, fontSize: 14, fontFamily: "Macondo", opacity: 0.6 }}>
-              {produit.prix.toFixed(2)}$ l'unité
+              {produit.prix}$ l'unité
             </Text>
 
             <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -83,6 +83,8 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
               </Pressable>
             </View>
           </>
+          :
+          <></>
         }
       </View>
       {from === "cart" ?
@@ -91,7 +93,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
             Prix total
           </Text>
           <Text style={[typography.body, { color: colors.text }]}>
-            {(produit.prix * produit.quantity).toFixed(2)}$
+            {(produit.prix * produit.quantity)}$
           </Text>
         </View>
         :
@@ -109,11 +111,11 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
         >
           <MaterialCommunityIcons name={from === "cart" ? "delete" : "arrow-right"} size={24} color={colors.tint} />
         </Pressable>
-        {/* {from === "products" &&
+         {from === "products" &&
           <Text style={[typography.subtitle, { color: colors.text, fontSize: 14 }]}>
             {itemInCart(produit.id, account?.id??0)?.quantity}
           </Text>
-        } */}
+        } 
       </View>
     </View>
   );
