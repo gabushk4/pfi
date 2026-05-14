@@ -16,8 +16,9 @@ export default function Details() {
     const db = useSQLiteContext();
     const getProducts = async () => {
         //prendre les produits de la bd
-        await db.getAllAsync("SELECT * FROM produits where id = " + id).then((p) => {
+        db.getFirstAsync("SELECT * FROM produits WHERE id = ?", [id.toString()]).then((p) => {
             // pour obtenir tous les résultats sous forme de tableau d'objets et le mettre dans produits.
+            console.log("produit", p)
             setProduit(p);
         });
     }
@@ -25,12 +26,11 @@ export default function Details() {
     useFocusEffect(React.useCallback(() => {
         getProducts();
     }, []));
-    console.log(produit[0]);
-    if (produit[0] == undefined) {
-        produit[0] = { nom: 'name couldn\'t be loaded', description: 'descriptions couldn\'t be loaded', prix: 0.00, image: 'image couldn\'t be loaded' }
+    console.log(produit);
+    if (produit == undefined) {
+        setProduit({ nom: 'name couldn\'t be loaded', description: 'descriptions couldn\'t be loaded', prix: 0.00, image: 'image couldn\'t be loaded' })
     }
-    console.log(produit[0]);
-//console.log(produit[0].nom);
+    console.log(produit);
     const styles = StyleSheet.create({
         wrapper: {
             height: '100%',
@@ -75,11 +75,8 @@ export default function Details() {
     });
     return (
         <View style={styles.wrapper}>
-            <Text style={[typography.title, { color: colors.text }, { textAlign: 'center' }]}>{produit[0].nom}</Text>
-            {/* <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].nom}</Text>
-            <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].description}</Text>
-            <Text style={[styles.listProductCardData, { color: colors.text }]}>{produit[0].prix}$</Text>  */}
-            <ProductCard from="products" produit={produit[0]}></ProductCard>
+            <Text style={[typography.title, { color: colors.text }, { textAlign: 'center' }]}>{produit.nom}</Text>
+            <ProductCard from="products" produit={produit}></ProductCard>
         </View>
     )
 }

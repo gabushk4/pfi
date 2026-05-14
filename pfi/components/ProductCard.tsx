@@ -9,7 +9,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, useColorScheme } from 'react
 import { View } from './Themed';
 
 
-const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart" }) => {
+const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart" | "admin" }) => {
   const colorScheme = useColorScheme()
   const colors = Colors[colorScheme ?? 'light']
   const { account } = useAccount()
@@ -22,7 +22,6 @@ const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart
       flex: 5,
       flexDirection: 'column',
       alignItems: 'center',
-      height: 104,
       width: '100%',
       justifyContent: 'space-between',
       paddingVertical: 8
@@ -55,7 +54,7 @@ const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart
         {from === "cart" &&
           <>
             <Text style={{ color: colors.text, fontSize: 14, fontFamily: "Macondo", opacity: 0.6 }}>
-              {produit.prix.toFixed(2)}$ l'unité
+              {produit.prix?.toFixed(2) ?? "introuvable "}$ l'unité
             </Text>
 
             <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -83,27 +82,25 @@ const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart
           </>
         }
       </View>
-      {from === "cart" ?
-        <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
-          <Text style={[typography.subtitle, { color: colors.text, fontSize: 16 }]}>
-            Prix total
-          </Text>
-          <Text style={[typography.body, { color: colors.text }]}>
-            {(produit.prix * produit.quantity).toFixed(2)}$
-          </Text>
-        </View>
-
-        :
-
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={[typography.subtitle, { color: colors.text, fontSize: 16 }]}>
-            {produit.prix.toFixed(2)} $ {/* TODO: internationalize */}
-          </Text>
-        </View>
-      }
-      {!isAdmin ?
-        <>
-          <View style={{ flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{flex:1, width:'100%', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+        {from === "cart" ?
+          <View style={{ width:'50%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
+            <Text style={[typography.subtitle, { color: colors.text, fontSize: 16 }]}>
+              Prix total
+            </Text>
+            <Text style={[typography.body, { color: colors.text }]}>
+              {(produit.prix * produit.quantity).toFixed(2)}$
+            </Text>
+          </View>
+          :
+          <View style={{ width:'50%', justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={[typography.subtitle, { color: colors.text, fontSize: 20 }]}>
+              Prix: {produit.prix?.toFixed(2) ?? "introuvable "} $ {/* TODO: internationalize */}
+            </Text>
+          </View>
+        }
+        {!isAdmin &&
+          <View style={{ width:'50%', height: '100%', alignItems: 'center', justifyContent: 'center'}}>
             <TouchableOpacity
               style={{ marginTop: 14 }}
               onPress={() => {
@@ -121,12 +118,8 @@ const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart
               </Text>
             }
           </View>
-        </>
-        :
-        <></>
-
-
-      }
+          }
+        </View>
 
     </View>
   );

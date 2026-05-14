@@ -84,7 +84,7 @@ export default function TabLayout() {
               href: isAdmin ? '/(tabs)/admin' : null,
               headerTitle: "Admin", //TODO: internationaliser
               title: "Admin", //TODO: internationaliser
-              tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
+              tabBarIcon: ({ color }) => <MaterialCommunityIcons name="security" size={24} color={color} />,
               headerRight: () => <HeaderRight currentLanguage={language} currentPage="account"
                 onMenuClick={() => {
                   setIsMenuOpen(true)

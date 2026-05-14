@@ -35,6 +35,7 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
       fontSize: 18,
     },
   });
+  
   const DeleteItem = async () => {
     try {
       const stmt = await db.prepareAsync('DELETE FROM produits WHERE id = $id');
@@ -133,24 +134,6 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
         >
           <MaterialCommunityIcons name={from === "cart" ? "delete" : from === "delete" ? "delete-forever" : "arrow-right"} size={24} color={colors.tint} />
         </Pressable>
-        {from === "products" &&
-          <Text style={[typography.subtitle, { color: colors.text, fontSize: 14 }]}>
-            {itemInCart(produit.id, account?.id ?? 0)?.quantity}
-          </Text>
-        }
-        {from === "cart" ?
-          <Pressable
-            style={{ marginTop: 14 }}
-            onPress={() => {
-              removeFromCart(produit.id, account?.id ?? 0)              
-            }}
-          >
-            <MaterialCommunityIcons name={ "delete"} size={24} color={colors.tint} />
-          </Pressable>
-          :
-          <MaterialCommunityIcons name='arrow-right' size={24} color={colors.tint} />
-        }
-
       </View>
     </Pressable>
   );
