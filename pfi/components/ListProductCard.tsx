@@ -5,13 +5,15 @@ import { useAccount } from '@/contexts/account';
 import { CartItem, useCart } from '@/contexts/cart';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
 import { View } from './Themed';
 
-const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "cart" }) => {
+const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "cart" | "delete" }) => {
   const colorScheme = useColorScheme()
   const colors = Colors[colorScheme ?? 'light']
+  const db = useSQLiteContext();
   const { account } = useAccount()
   const { removeFromCart, modifyCart, addToCart, itemInCart } = useCart()
 
@@ -34,13 +36,22 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
       fontSize: 18,
     },
   });
+  const DeleteItem = async () => {
+    try {
+      const stmt = await db.prepareAsync('DELETE FROM produits WHERE id = $id');
+      let result = await stmt.executeAsync({ $id: produit.id });
+      console.log("result : ", result.lastInsertRowId, result.changes);
+    } catch (error) {
+      console.log(error);
+    }
 
+  }
 
   if (from === 'cart')
     produit = produit as CartItem
   else
     produit = produit as Product
-  
+
   console.log(produit);
   return (
     <Pressable style={s.card}
@@ -49,8 +60,8 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
       }}
     >
       <Image
-        source={{uri: produit.image}}
-        style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8, marginRight:5 }}
+        source={{ uri: produit.image }}
+        style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8, marginRight: 5 }}
         resizeMode='contain'
       />
 
@@ -110,6 +121,24 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
         </>
       }
       <View style={{ flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable
+          style={{ marginTop: 14 }}
+          onPress={() => {
+            if (from === "cart")
+              removeFromCart(produit.id, account?.id ?? 0)
+            else if (from === "delete") {
+              DeleteItem()
+              router.push({ pathname: '/(tabs)/admin'})
+            }
+          }}
+        >
+          <MaterialCommunityIcons name={from === "cart" ? "delete" : from === "delete" ? "delete-forever" : "arrow-right"} size={24} color={colors.tint} />
+        </Pressable>
+        {from === "products" &&
+          <Text style={[typography.subtitle, { color: colors.text, fontSize: 14 }]}>
+            {itemInCart(produit.id, account?.id ?? 0)?.quantity}
+          </Text>
+        }
         {from === "cart" ?
           <Pressable
             style={{ marginTop: 14 }}
