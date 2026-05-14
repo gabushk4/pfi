@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 type Account = {
   username: string;
@@ -29,6 +29,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
 
   const login = (account: Account) => {
     console.log(`${account.username} loggin in`)
+    console.log(`is admin : ${account.admin}`)
     setAccount(account)
   };
   const logout = () => setAccount(null);

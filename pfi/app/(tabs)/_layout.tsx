@@ -1,15 +1,15 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-native';
-
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { getHeaderStyle } from '@/constants/HeaderStyles';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Tabs } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-native';
 import HeaderRight from '../../components/headerRight';
 import MainMenu from '../../components/mainMenu';
+import { useAccount } from '../../contexts/account';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -28,7 +28,8 @@ export default function TabLayout() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  const { account } = useAccount()
+  const isAdmin = account?.admin;
   useEffect(() => {
     if (isMenuOpen)
       setIsModalOpen(isMenuOpen)
@@ -76,16 +77,19 @@ export default function TabLayout() {
                 setIsMenuOpen(true)
               }} />
           }} />
-        <Tabs.Screen name="admin"
-          options={{
-            headerTitle: "Admin", //TODO: internationaliser
-            title: "Admin", //TODO: internationaliser
-            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
-            headerRight: () => <HeaderRight currentLanguage={language} currentPage="account"
-              onMenuClick={() => {
-                setIsMenuOpen(true)
-              }} />
-          }} />
+        if(isAdmin) {
+          <Tabs.Screen name="admin"
+            options={{
+              headerTitle: "Admin", //TODO: internationaliser
+              title: "Admin", //TODO: internationaliser
+              tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
+              headerRight: () => <HeaderRight currentLanguage={language} currentPage="account"
+                onMenuClick={() => {
+                  setIsMenuOpen(true)
+                }} />
+            }} />
+        }
+
       </Tabs>
     </>
   );
