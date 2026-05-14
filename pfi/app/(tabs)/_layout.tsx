@@ -29,7 +29,7 @@ export default function TabLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { account } = useAccount()
-  const isAdmin = true//account?.admin;
+  const isAdmin = account?.admin;
   useEffect(() => {
     if (isMenuOpen)
       setIsModalOpen(isMenuOpen)

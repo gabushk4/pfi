@@ -27,7 +27,7 @@ export default function Cart() {
         if (account != null) {
             const bill = `${items.map((item: CartItem) =>
                 `${item.nom} x${item.quantity} | ${(item.prix * item.quantity)}$`)
-                .join('\n--------------------\n')}\n\nTotal : ${total}`
+                .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
         
             emailjs.send('service_gtswpxs', 'template_2rnemwe', {
                 to_name: account?.username,
@@ -177,7 +177,7 @@ export default function Cart() {
                     Total
                 </Text>
                 <Text style={[typography.title, {color:colors.text}]}>
-                    {total}$
+                    {total.toFixed(2)}$
                 </Text>
             </View>
             <View style={s.listContainer}>

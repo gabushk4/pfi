@@ -24,7 +24,7 @@ export default function TabLayout() {
     const colors = Colors[colorScheme ?? "light"]
 
     const { account } = useAccount()
-    const isAdmin = true//= account?.admin;
+    const isAdmin = account?.admin;
 
     return (
         <>
