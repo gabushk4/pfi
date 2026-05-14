@@ -62,6 +62,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="cart"
           options={{
+            href: '/cart',
             headerTitle: "Panier", //TODO: internationaliser
             title: "Panier", //TODO: internationaliser
             tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cart" size={24} color={color} />,
@@ -77,9 +78,10 @@ export default function TabLayout() {
                 setIsMenuOpen(true)
               }} />
           }} />
-        if(isAdmin) {
+       
           <Tabs.Screen name="admin"
             options={{
+              href: isAdmin ? '/(tabs)/admin' : null,
               headerTitle: "Admin", //TODO: internationaliser
               title: "Admin", //TODO: internationaliser
               tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" size={24} color={color} />,
@@ -88,7 +90,6 @@ export default function TabLayout() {
                   setIsMenuOpen(true)
                 }} />
             }} />
-        }
 
       </Tabs>
     </>

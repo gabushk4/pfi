@@ -1,16 +1,15 @@
+import ListProductCard from '@/components/ListProductCard';
+import PayConfirmationModal from '@/components/payConfirmationModal';
 import Colors from '@/constants/Colors';
 import { typography } from '@/constants/typography';
 import { useAccount } from '@/contexts/account';
-import useUserCart from '@/hooks/useUserCart'
+import { CartItem, useCart } from '@/contexts/cart';
+import useUserCart from '@/hooks/useUserCart';
+import emailjs from '@emailjs/browser';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { View, Text, useColorScheme, StyleSheet, FlatList, Image, Touchable, TouchableOpacity, Alert } from 'react-native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useCart } from '@/contexts/cart';
-import PayConfirmationModal from '@/components/payConfirmationModal';
-import emailjs from '@emailjs/browser';
-import ListProductCard from '@/components/ListProductCard';
-import { CartItem } from '@/contexts/cart';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function Cart() {
     
@@ -27,7 +26,7 @@ export default function Cart() {
     const proceedToPayment = () => {
         if (account != null) {
             const bill = `${items.map((item: CartItem) =>
-                `${item.nom} x${item.quantity} | ${(item.prix * item.quantity).toFixed(2)}$`)
+                `${item.nom} x${item.quantity} | ${(item.prix * item.quantity)}$`)
                 .join('\n--------------------\n')}\n\nTotal : ${total.toFixed(2)}`
         
             emailjs.send('service_gtswpxs', 'template_2rnemwe', {
@@ -46,7 +45,8 @@ export default function Cart() {
         } else
             Alert.alert("Erreur", "Vous devez être connecté pour passer une commande.")
     }
-
+    console.log("cart items : ")
+    console.log(items)
     const s = StyleSheet.create({
         container: {
             flex: 5,

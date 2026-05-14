@@ -5,7 +5,7 @@ export default function ProductsLayout() {
         <Stack >
             <Stack.Screen name="index" options={{ headerShown: false, headerLeft: () => null }} />
             <Stack.Screen name="[id]" options={{
-                headerBackButtonDisplayMode: 'minimal', headerTitle: "Détails"
+                headerBackButtonDisplayMode:'minimal', headerTransparent:true, headerBackVisible: true, headerTitle: ""
             }} />
         </Stack>
 

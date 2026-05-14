@@ -5,11 +5,11 @@ import { useSQLiteContext } from 'expo-sqlite';
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, useColorScheme, View } from 'react-native';
 
-export default function Products() {
-    const colorScheme = useColorScheme()
-    const colors = Colors[colorScheme ?? 'light'];
+export default function Admin() {
     const db = useSQLiteContext();
     const [produits, setProduits] = useState<any[]>([]);
+    const colorScheme = useColorScheme()
+    const colors = Colors[colorScheme ?? 'light'];
     const styles = StyleSheet.create({
         wrapper: {
             height: '100%',
@@ -29,6 +29,10 @@ export default function Products() {
             flex: 10,
             display: 'flex',
             flexDirection: 'column',
+            borderColor: 'white',
+            borderStyle: 'solid',
+            borderWidth: 1,
+
         },
         listProductCard: {
             display: 'flex',
@@ -48,6 +52,13 @@ export default function Products() {
 
 
     });
+
+    const order66 = async () => {
+        const stmt = await db.prepareAsync('DELETE FROM produits WHERE 1=1');
+
+        let result = await stmt.executeAsync();
+        console.log("result : ", result.lastInsertRowId, result.changes);
+    }
     const getProducts = async () => {
         //prendre les produits de la bd
         await db.getAllAsync("SELECT * FROM produits").then((p) => {
@@ -55,25 +66,25 @@ export default function Products() {
             setProduits(p);
         });
     }
-    // useFocusEffect : chaque fois que l'index obtien le focus de l'utilisateur, on refetch les items pour les mettre a jours
     useFocusEffect(React.useCallback(() => {
         getProducts();
     }, []));
-
     return (
         <View style={styles.wrapper}>
+            {/* <TouchableOpacity
+                onPress={order66}>
+                <Text style={{ color: colors.text }}>Hydrogen bomb</Text>
+            </TouchableOpacity> */}
+
+            {/* <Text style={[styles.header]}>Liste de Produits</Text> */}
             <View style={styles.listProductCardWrapper}>
-                {/* <View style={styles.listProductCard}>
-                    <Text style={styles.listProductCardData}> Image </Text>
-                    <Text style={styles.listProductCardData}> Nom </Text>
-                </View> */}
                 <FlatList style={{ width: 'auto' }}
                     data={produits}
                     renderItem={({ item }) =>
-                        <ListProductCard produit={item} from='products' />}
+                        <ListProductCard produit={item} from='delete' />}
                     keyExtractor={item => item.id} />
             </View>
         </View>
     )
-
 }
+
