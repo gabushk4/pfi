@@ -43,7 +43,11 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
   
   console.log(produit);
   return (
-    <View style={s.card}>
+    <Pressable style={s.card}
+      onPress={() => {
+        router.navigate({ pathname: '/products/[id]', params: { id: produit.id } })
+      }}
+    >
       <Image
         source={{uri: produit.image}}
         style={{ flex: 1, height: '60%', aspectRatio: 1, borderRadius: 8, marginRight:5 }}
@@ -63,7 +67,9 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
             <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Pressable
                 onPress={() => {
-                  modifyCart(produit.id, produit.quantity - 1, account?.id ?? 0)
+                  if(produit.quantity > 1)
+                    modifyCart(produit.id, produit.quantity - 1, account?.id ?? 0)
+                    
                 }}
               >
                 <MaterialCommunityIcons name="minus" size={24} color={colors.tint} />
@@ -97,27 +103,28 @@ const ListProductCard = ({ produit, from }: { produit: any, from: "products" | "
           </Text>
         </View>
         :
-        <></>
+        <>
+          <Text style={{ color: colors.text, fontSize: 18, fontFamily: "Macondo", opacity: 0.6 }}>
+            {produit.prix}$
+          </Text>
+        </>
       }
       <View style={{ flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-        <Pressable
-          style={{ marginTop: 14 }}
-          onPress={() => {
-            if (from === "cart")
-              removeFromCart(produit.id, account?.id ?? 0)
-            else
-              router.navigate({ pathname: '/products/[id]', params: { id: produit.id } })
-          }}
-        >
-          <MaterialCommunityIcons name={from === "cart" ? "delete" : "arrow-right"} size={24} color={colors.tint} />
-        </Pressable>
-         {from === "products" &&
-          <Text style={[typography.subtitle, { color: colors.text, fontSize: 14 }]}>
-            {itemInCart(produit.id, account?.id??0)?.quantity}
-          </Text>
-        } 
+        {from === "cart" ?
+          <Pressable
+            style={{ marginTop: 14 }}
+            onPress={() => {
+              removeFromCart(produit.id, account?.id ?? 0)              
+            }}
+          >
+            <MaterialCommunityIcons name={ "delete"} size={24} color={colors.tint} />
+          </Pressable>
+          :
+          <MaterialCommunityIcons name='arrow-right' size={24} color={colors.tint} />
+        }
+
       </View>
-    </View>
+    </Pressable>
   );
 }
 

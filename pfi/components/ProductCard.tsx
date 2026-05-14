@@ -50,9 +50,6 @@ const ProductCard = ({ produit, from }: { produit: any, from: "products" | "cart
       />
       <View style={{ flex: 2, flexDirection: 'column', alignItems: 'flex-start', justifyContent: from == "cart" ? 'space-between' : 'center', height: '100%' }}>
         <Text style={{ color: colors.text, fontSize: from === "cart" ? 16 : 24, fontFamily: "Macondo", flexWrap: "wrap" }}>
-          {produit.nom}
-        </Text>
-        <Text style={{ color: colors.text, fontSize: from === "cart" ? 16 : 24, fontFamily: "Macondo", flexWrap: "wrap" }}>
           {produit.description}
         </Text>
         {from === "cart" &&

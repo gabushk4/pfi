@@ -62,7 +62,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="cart"
           options={{
-            href: isAdmin ? null : '/cart',
+            href: '/cart',
             headerTitle: "Panier", //TODO: internationaliser
             title: "Panier", //TODO: internationaliser
             tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cart" size={24} color={color} />,
