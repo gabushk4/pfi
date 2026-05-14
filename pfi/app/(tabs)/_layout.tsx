@@ -5,6 +5,7 @@ import { getHeaderStyle } from '@/constants/HeaderStyles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
+import { I18n } from "i18n-js";
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
 import HeaderRight from '../../components/headerRight';
@@ -21,8 +22,24 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
 
+
   const [language, setLanguage] = useState("auto")
 
+  const translations = {
+    en: {
+      product:"Products",
+      cart:"Cart",
+      account:"Account",
+
+    },
+    fr: {
+      product:"Produits",
+      cart:"Panier",
+      account:"Compte",
+    }
+  }
+    const i18n = new I18n(translations)
+    i18n.locale = 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"]
 

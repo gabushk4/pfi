@@ -167,7 +167,7 @@ export default function Cart() {
             </View>
         )
     } */
-
+console.log(items)
     return (
         <>
         <PayConfirmationModal visible={isPayModalOpen} onClose={() => setIsPayModalOpen(false)}/>
